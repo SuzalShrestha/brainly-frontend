@@ -1,7 +1,7 @@
+'use client';
 import { Notes } from '@/components/notes';
 import { Button } from '@/components/ui/button';
 import { Plus, Share2 } from 'lucide-react';
-
 export default function Home() {
     return (
         <div className='flex flex-col '>

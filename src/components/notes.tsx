@@ -1,6 +1,7 @@
 import { Edit, File, Link, Trash } from 'lucide-react';
+import { Button } from './ui/button';
 
-export function Notes(notes) {
+export function Notes() {
     return (
         <div className='grid grid-cols-3 gap-4 my-5'>
             <div className='grid grid-cols-1 grid-row-4 gap-3 p-7 border-gray-500 border-2 h-[400px] '>
@@ -9,10 +10,16 @@ export function Notes(notes) {
                         <File size={25} />
                         title
                     </div>
-                    <div className='flex gap-5'>
-                        <Link size={16} />
-                        <Edit size={16} />
-                        <Trash size={16} />
+                    <div className='flex gap-1'>
+                        <Button variant={'outline'}>
+                            <Link size={14} />
+                        </Button>
+                        <Button variant={'outline'}>
+                            <Edit size={14} />
+                        </Button>
+                        <Button variant={'outline'}>
+                            <Trash size={14} />
+                        </Button>
                     </div>
                 </div>
                 <div className='row-span-2'>
