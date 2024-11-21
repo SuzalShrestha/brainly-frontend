@@ -1,3 +1,4 @@
+'use client';
 import { Edit, File, Link, Trash } from 'lucide-react';
 import { Button } from './ui/button';
 import { useGetContent } from '@/api/use-get-content';
@@ -5,8 +6,6 @@ export function Notes() {
     const { data, error, isLoading } = useGetContent();
     if (isLoading) return <div>Loading...</div>;
     if (error) return <div>Error: {error.toString()}</div>;
-
-    console.log(data);
     return (
         <div className='grid grid-cols-3 gap-4 my-5'>
             {data?.map((note) => {
