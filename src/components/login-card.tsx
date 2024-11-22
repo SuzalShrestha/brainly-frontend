@@ -1,3 +1,4 @@
+'use client';
 import {
     Card,
     CardHeader,
@@ -8,8 +9,37 @@ import {
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { useState } from 'react';
+import { signIn } from 'next-auth/react';
+import { toast } from 'sonner';
 
 function LoginCard() {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const handleLogin = async () => {
+        try {
+            setIsLoading(true);
+            toast.loading('Logging in...');
+            const result = await signIn('credentials', {
+                email,
+                password,
+            });
+            if (result?.error) {
+                toast.dismiss();
+                toast.error('Invalid email or password');
+                return;
+            }
+            toast.dismiss();
+            toast.success('Logged in successfully');
+        } catch {
+            toast.dismiss();
+            toast.error('Something went wrong. Please try again.');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     return (
         <Card className='mx-auto max-w-sm'>
             <CardHeader className='space-y-1'>
@@ -24,21 +54,36 @@ function LoginCard() {
                         <Label htmlFor='email'>Email</Label>
                         <Input
                             id='email'
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
                             type='email'
                             placeholder='johndoe@example.com'
                             required
+                            disabled={isLoading}
                         />
                     </div>
                     <div className='space-y-2'>
                         <Label htmlFor='password'>Password</Label>
-                        <Input id='password' type='password' required />
+                        <Input
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            id='password'
+                            type='password'
+                            required
+                            disabled={isLoading}
+                        />
                     </div>
-                    <Button type='submit' className='w-full'>
-                        Login
+                    <Button
+                        onClick={handleLogin}
+                        className='w-full'
+                        disabled={isLoading}
+                    >
+                        {isLoading ? 'Logging in...' : 'Login'}
                     </Button>
                 </div>
             </CardContent>
         </Card>
     );
 }
+
 export default LoginCard;

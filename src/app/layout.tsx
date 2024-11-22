@@ -21,7 +21,7 @@ const geistMono = localFont({
 //     title: 'Brainly',
 //     description: 'Your Second Brain',
 // };
-
+import { Toaster } from 'sonner';
 import { QueryClientProvider } from 'react-query';
 export default function RootLayout({
     children,
@@ -34,6 +34,7 @@ export default function RootLayout({
                 className={`${geistSans.variable} ${geistMono.variable} antialiased`}
             >
                 <QueryClientProvider client={queryClient}>
+                    <Toaster position={'top-left'} />
                     {children}
                 </QueryClientProvider>
             </body>

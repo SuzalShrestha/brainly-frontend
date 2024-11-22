@@ -7,7 +7,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         error: '/auth/error',
     },
     events: {},
-    callbacks: {},
+    callbacks: {
+        async session({ session }) {
+            return session;
+        },
+        async jwt({ token }) {
+            return token;
+        },
+    },
     adapter: {},
     session: {
         strategy: 'jwt',

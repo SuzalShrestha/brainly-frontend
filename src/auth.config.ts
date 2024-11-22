@@ -8,7 +8,7 @@ export default {
                 password: {},
             },
             authorize: async (credentials) => {
-                const user = await fetch(
+                const res = await fetch(
                     `${process.env.NEXT_PUBLIC_API_URL}/api/v1/login`,
                     {
                         method: 'POST',
@@ -23,7 +23,7 @@ export default {
                     }
                     throw new Error('Invalid login');
                 });
-                return user;
+                return res.data.user;
             },
         }),
     ],
