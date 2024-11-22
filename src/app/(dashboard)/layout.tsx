@@ -1,6 +1,5 @@
 'use client';
-
-import { SidebarTrigger } from '@/components/ui/sidebar';
+import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/app-sidebar';
 export default function RootLayout({
     children,
@@ -9,11 +8,13 @@ export default function RootLayout({
 }>) {
     return (
         <>
-            <AppSidebar />
-            <main className=' flex flex-col gap-10 w-full m-10'>
-                <SidebarTrigger />
-                {children}
-            </main>
+            <SidebarProvider>
+                <AppSidebar />
+                <main className='flex flex-col gap-2 w-full m-10'>
+                    <SidebarTrigger />
+                    {children}
+                </main>
+            </SidebarProvider>
         </>
     );
 }

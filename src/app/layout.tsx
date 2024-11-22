@@ -21,7 +21,7 @@ const geistMono = localFont({
 //     title: 'Brainly',
 //     description: 'Your Second Brain',
 // };
-import { SidebarProvider } from '@/components/ui/sidebar';
+
 import { QueryClientProvider } from 'react-query';
 export default function RootLayout({
     children,
@@ -34,7 +34,7 @@ export default function RootLayout({
                 className={`${geistSans.variable} ${geistMono.variable} antialiased`}
             >
                 <QueryClientProvider client={queryClient}>
-                    <SidebarProvider>{children}</SidebarProvider>
+                    {children}
                 </QueryClientProvider>
             </body>
         </html>

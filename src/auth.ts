@@ -1,31 +1,15 @@
 import NextAuth from 'next-auth';
-import Credentials from 'next-auth/providers/credentials';
-
+import authConfig from './auth.config';
 export const { handlers, signIn, signOut, auth } = NextAuth({
-    providers: [
-        Credentials({
-            credentials: {
-                userName: {},
-                password: {},
-            },
-            authorize: async (credentials) => {
-                const user = await fetch(
-                    `${process.env.NEXT_PUBLIC_API_URL}/api/v1/login`,
-                    {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(credentials),
-                    }
-                ).then((res) => {
-                    if (res.ok) {
-                        return res.json();
-                    }
-                    throw new Error('Invalid login');
-                });
-                return user;
-            },
-        }),
-    ],
+    ...authConfig,
+    pages: {
+        signIn: '/login',
+        error: '/auth/error',
+    },
+    events: {},
+    callbacks: {},
+    adapter: {},
+    session: {
+        strategy: 'jwt',
+    },
 });
