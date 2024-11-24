@@ -4,26 +4,34 @@ export default {
     providers: [
         Credentials({
             credentials: {
-                userName: {},
+                email: {},
                 password: {},
             },
             authorize: async (credentials) => {
-                const res = await fetch(
-                    `${process.env.NEXT_PUBLIC_API_URL}/api/v1/login`,
-                    {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(credentials),
+                try {
+                    if (!credentials.email || !credentials.password) {
+                        throw new Error(
+                            'Please enter a valid email and password'
+                        );
                     }
-                ).then((res) => {
-                    if (res.ok) {
-                        return res.json();
+                    const res = await fetch(
+                        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/login`,
+                        {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(credentials),
+                        }
+                    );
+                    const user = await res.json();
+                    if (res.ok && user) {
+                        return user;
                     }
-                    throw new Error('Invalid login');
-                });
-                return res.data.user;
+                    return null;
+                } catch (err) {
+                    throw new Error('Invalid login: ' + err.message);
+                }
             },
         }),
     ],

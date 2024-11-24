@@ -74,7 +74,7 @@ function LoginCard() {
                         />
                     </div>
                     <Button
-                        onClick={handleLogin}
+                        onClick={() => handleLogin()}
                         className='w-full'
                         disabled={isLoading}
                     >
