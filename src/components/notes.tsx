@@ -4,6 +4,7 @@ import { Button } from './ui/button';
 import { useGetContent } from '@/api/use-get-content';
 export function Notes() {
     const { data, error, isLoading } = useGetContent();
+    console.log(data);
     if (isLoading) return <div>Loading...</div>;
     if (error) return <div>Error: {error.toString()}</div>;
     return (
