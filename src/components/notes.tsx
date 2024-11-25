@@ -1,54 +1,125 @@
 'use client';
-import { Edit, File, Link, Trash } from 'lucide-react';
+import {
+    Calendar,
+    Link as LinkIcon,
+    MoreVertical,
+    Pencil,
+    Share2,
+    Star,
+    Trash,
+} from 'lucide-react';
 import { Button } from './ui/button';
 import { useGetContent } from '@/api/use-get-content';
-export function Notes() {
+import { motion } from 'motion/react';
+import {
+    Card,
+    CardContent,
+    CardFooter,
+    CardHeader,
+} from '@/components/ui/card';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Badge } from './ui/badge';
+
+interface NotesProps {
+    filter?: 'all' | 'favorites' | 'shared';
+}
+
+export function Notes({ filter = 'all' }: NotesProps) {
     const { data, error, isLoading } = useGetContent();
-    console.log(data);
     if (isLoading) return <div>Loading...</div>;
     if (error) return <div>Error: {error.toString()}</div>;
+    if (data?.length === 0) return <div>No notes found</div>;
     return (
-        <div className='grid grid-cols-3 gap-4 my-5'>
+        <motion.div
+            initial={{ opacity: 0, y: -50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: 'easeInOut', delay: 0.5 }}
+            className='grid grid-cols-3 gap-4 my-5'
+        >
             {data?.map((note) => {
                 return <Note key={note._id} {...note} />;
             })}
-        </div>
+        </motion.div>
     );
 }
-function Note({ title, link, tags, content, type }) {
+function Note({ title, link, tags, content, type, createdAt: date }) {
     return (
-        <div className='grid grid-cols-1 grid-row-4 gap-3 p-7 border-gray-500 border-2 h-[400px] '>
-            <div className='flex justify-between'>
-                <div className='flex font-semibold gap-3 text-xl'>
-                    <File size={25} />
-                    {title}
-                </div>
-                <div className='flex gap-1'>
-                    <Button variant={'outline'}>
-                        <Link size={14} />
-                    </Button>
-                    <Button variant={'outline'}>
-                        <Edit size={14} />
-                    </Button>
-                    <Button variant={'outline'}>
-                        <Trash size={14} />
-                    </Button>
-                </div>
-            </div>
-            <div className='flex gap-3'>{link}</div>
-            <div className='row-span-2'>{content}</div>
-            <div className='flex '>
-                {tags.map((tag) => {
-                    return (
-                        <div
-                            key={tag}
-                            className='bg-gray-200 px-2 rounded-full'
-                        >
-                            {tag}
+        <Card className='group relative'>
+            <CardHeader className='grid gap-4'>
+                <div className='flex items-start justify-between space-x-4'>
+                    <div className='space-y-2'>
+                        <h3 className='font-semibold leading-none tracking-tight'>
+                            {title}
+                        </h3>
+                        <div className='flex items-center space-x-1 text-sm text-muted-foreground'>
+                            <Calendar className='h-3 w-3' />
+                            <time dateTime={date}>
+                                {new Date(date).toLocaleDateString()}
+                            </time>
                         </div>
-                    );
-                })}
-            </div>
-        </div>
+                    </div>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant='ghost' className='h-8 w-8 p-0'>
+                                <MoreVertical className='h-4 w-4' />
+                                <span className='sr-only'>Open menu</span>
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align='end'>
+                            <DropdownMenuItem>
+                                <Pencil className='mr-2 h-4 w-4' />
+                                Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuItem>
+                                <Share2 className='mr-2 h-4 w-4' />
+                                Share
+                            </DropdownMenuItem>
+                            <DropdownMenuItem>
+                                <Star className='mr-2 h-4 w-4' />
+                                Add to favorites
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem className='text-destructive'>
+                                <Trash className='mr-2 h-4 w-4' />
+                                Delete
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
+            </CardHeader>
+            <CardContent className='grid gap-4'>
+                <div className='line-clamp-3 text-sm text-muted-foreground'>
+                    {content}
+                </div>
+                {link && (
+                    <div className='flex items-center space-x-2 text-sm text-blue-600'>
+                        <LinkIcon className='h-3 w-3' />
+                        <a
+                            href={link}
+                            target='_blank'
+                            rel='noopener noreferrer'
+                            className='hover:underline'
+                        >
+                            {new URL(link).hostname}
+                        </a>
+                    </div>
+                )}
+            </CardContent>
+            <CardFooter>
+                <div className='flex flex-wrap gap-2'>
+                    {tags.map((tag) => (
+                        <Badge key={tag} variant='secondary'>
+                            {tag}
+                        </Badge>
+                    ))}
+                </div>
+            </CardFooter>
+        </Card>
     );
 }
