@@ -1,15 +1,14 @@
 import { apiClient } from '@/services/api-client';
-import { useQuery } from 'react-query';
+import { useQuery, UseQueryResult } from 'react-query';
 
-const getContent = async () => {
+const getContent = async <T>(): Promise<T> => {
     const res = await apiClient.get('/content');
     return res.data;
 };
 
-export const useGetContent = () => {
-    const { data, error, isLoading } = useQuery({
+export const useGetContent = <T>(): UseQueryResult<T, Error> => {
+    return useQuery({
         queryKey: 'content',
-        queryFn: getContent,
+        queryFn: () => getContent<T>(),
     });
-    return { data, error, isLoading };
 };

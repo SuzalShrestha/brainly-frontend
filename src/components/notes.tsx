@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { useGetContent } from '@/api/use-get-content';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import {
     Card,
     CardContent,
@@ -25,30 +25,151 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Badge } from './ui/badge';
+import { toast } from 'sonner';
+import { Skeleton } from './ui/skeleton';
 
 interface NotesProps {
     filter?: 'all' | 'favorites' | 'shared';
 }
 
+interface NoteType {
+    _id: string;
+    title: string;
+    content: string;
+    link?: string;
+    tags: string[];
+    type: 'note' | 'link' | 'image';
+    createdAt: string;
+    isFavorite?: boolean;
+}
+
 export function Notes({ filter = 'all' }: NotesProps) {
-    const { data, error, isLoading } = useGetContent();
-    if (isLoading) return <div>Loading...</div>;
-    if (error) return <div>Error: {error.toString()}</div>;
-    if (data?.length === 0) return <div>No notes found</div>;
+    const { data, error, isLoading } = useGetContent<NoteType[]>();
+
+    if (error) {
+        toast.error('Failed to load notes');
+        return (
+            <div className='flex flex-col items-center justify-center p-8 text-muted-foreground'>
+                <p>Something went wrong while loading your notes.</p>
+                <Button
+                    variant='outline'
+                    className='mt-4'
+                    onClick={() => window.location.reload()}
+                >
+                    Try Again
+                </Button>
+            </div>
+        );
+    }
+
+    if (isLoading) {
+        return (
+            <div className='grid grid-cols-3 gap-4 my-5'>
+                {[...Array(6)].map((_, i) => (
+                    <NoteSkeleton key={i} />
+                ))}
+            </div>
+        );
+    }
+
+    if (!data || data.length === 0) {
+        return (
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className='flex flex-col items-center justify-center p-8 text-muted-foreground'
+            >
+                <p>No notes found</p>
+                <Button variant='outline' className='mt-4'>
+                    Create your first note
+                </Button>
+            </motion.div>
+        );
+    }
+
+    const filteredNotes = data.filter((note) => {
+        switch (filter) {
+            case 'favorites':
+                return note.isFavorite;
+            case 'shared':
+                return note.type === 'shared';
+            default:
+                return true;
+        }
+    });
+
     return (
-        <motion.div
-            initial={{ opacity: 0, y: -50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: 'easeInOut', delay: 0.5 }}
-            className='grid grid-cols-3 gap-4 my-5'
-        >
-            {data?.map((note) => {
-                return <Note key={note._id} {...note} />;
-            })}
-        </motion.div>
+        <AnimatePresence>
+            <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
+                transition={{ duration: 0.2 }}
+                className='grid grid-cols-3 gap-4 my-5'
+            >
+                {filteredNotes.map((note) => (
+                    <motion.div
+                        key={note._id}
+                        layout
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                    >
+                        <Note {...note} />
+                    </motion.div>
+                ))}
+            </motion.div>
+        </AnimatePresence>
     );
 }
-function Note({ title, link, tags, content, type, createdAt: date }) {
+
+function NoteSkeleton() {
+    return (
+        <Card className='group relative'>
+            <CardHeader className='grid gap-4'>
+                <div className='flex items-start justify-between space-x-4'>
+                    <div className='space-y-2 w-full'>
+                        <Skeleton className='h-4 w-3/4' />
+                        <Skeleton className='h-3 w-1/4' />
+                    </div>
+                </div>
+            </CardHeader>
+            <CardContent className='grid gap-4'>
+                <Skeleton className='h-20' />
+            </CardContent>
+            <CardFooter>
+                <div className='flex gap-2'>
+                    <Skeleton className='h-6 w-16' />
+                    <Skeleton className='h-6 w-16' />
+                </div>
+            </CardFooter>
+        </Card>
+    );
+}
+
+interface NoteProps extends NoteType {}
+
+function Note({
+    title,
+    link,
+    tags,
+    content,
+    createdAt: date,
+    isFavorite,
+}: NoteProps) {
+    const handleAction = (action: string) => {
+        toast.promise(
+            // Simulate API call
+            new Promise((resolve) => setTimeout(resolve, 1000)),
+            {
+                loading: `${action}ing note...`,
+                success: `Note ${action.toLowerCase()}d successfully`,
+                error: `Failed to ${action.toLowerCase()} note`,
+            }
+        );
+    };
+
     return (
         <Card className='group relative'>
             <CardHeader className='grid gap-4'>
@@ -72,20 +193,35 @@ function Note({ title, link, tags, content, type, createdAt: date }) {
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align='end'>
-                            <DropdownMenuItem>
+                            <DropdownMenuItem
+                                onClick={() => handleAction('Edit')}
+                            >
                                 <Pencil className='mr-2 h-4 w-4' />
                                 Edit
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
+                            <DropdownMenuItem
+                                onClick={() => handleAction('Share')}
+                            >
                                 <Share2 className='mr-2 h-4 w-4' />
                                 Share
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
+                            <DropdownMenuItem
+                                onClick={() =>
+                                    handleAction(
+                                        isFavorite ? 'Unfavorite' : 'Favorite'
+                                    )
+                                }
+                            >
                                 <Star className='mr-2 h-4 w-4' />
-                                Add to favorites
+                                {isFavorite
+                                    ? 'Remove from favorites'
+                                    : 'Add to favorites'}
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem className='text-destructive'>
+                            <DropdownMenuItem
+                                className='text-destructive'
+                                onClick={() => handleAction('Delete')}
+                            >
                                 <Trash className='mr-2 h-4 w-4' />
                                 Delete
                             </DropdownMenuItem>
