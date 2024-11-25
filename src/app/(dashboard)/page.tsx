@@ -44,6 +44,7 @@ export default function Home() {
             >
                 <TabsList>
                     <TabsTrigger value='all'>All Notes</TabsTrigger>
+                    <TabsTrigger value='shared'>Shared</TabsTrigger>
                     <TabsTrigger value='favorites'>Favorites</TabsTrigger>
                 </TabsList>
                 <TabsContent value='all'>
@@ -51,6 +52,9 @@ export default function Home() {
                 </TabsContent>
                 <TabsContent value='favorites'>
                     <Notes filter='favorites' />
+                </TabsContent>
+                <TabsContent value='shared'>
+                    <Notes filter='shared' />
                 </TabsContent>
             </Tabs>
         </div>

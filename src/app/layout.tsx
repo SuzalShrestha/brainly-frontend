@@ -3,9 +3,6 @@ import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import './globals.css';
 
-import { QueryClient } from 'react-query';
-export const queryClient = new QueryClient();
-
 const geistSans = localFont({
     src: './fonts/GeistVF.woff',
     variable: '--font-geist-sans',
@@ -22,7 +19,9 @@ const geistMono = localFont({
 //     description: 'Your Second Brain',
 // };
 import { Toaster } from 'sonner';
-import { QueryClientProvider } from 'react-query';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { queryClient } from '@/lib/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 export default function RootLayout({
     children,
 }: Readonly<{
@@ -35,6 +34,7 @@ export default function RootLayout({
             >
                 <QueryClientProvider client={queryClient}>
                     <Toaster position={'top-left'} />
+                    <ReactQueryDevtools initialIsOpen={false} />
                     {children}
                 </QueryClientProvider>
             </body>
