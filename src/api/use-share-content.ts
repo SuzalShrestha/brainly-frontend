@@ -1,16 +1,24 @@
 import { apiClient } from '@/services/api-client';
-import { useQuery, UseQueryResult } from '@tanstack/react-query';
+import { useMutation, UseMutationResult } from '@tanstack/react-query';
 
-const getShareContent = async () => {
+interface ShareResponse {
+    shareUrl: string;
+    hash: string;
+}
+
+const shareContent = async (): Promise<ShareResponse> => {
     const response = await apiClient.post('/brain/share', {
         share: true,
     });
     return response.data;
 };
 
-export const useShareContent = <T>(): UseQueryResult<T, Error> => {
-    return useQuery({
-        queryKey: ['share-content'],
-        queryFn: () => getShareContent(),
+export const useShareContent = (): UseMutationResult<
+    ShareResponse,
+    Error,
+    void
+> => {
+    return useMutation({
+        mutationFn: shareContent,
     });
 };
