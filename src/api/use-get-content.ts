@@ -9,10 +9,7 @@ const getContent = async <T>(): Promise<T> => {
 
 export const useGetContent = <T>(): UseQueryResult<T, Error> => {
     return useQuery({
-        queryKey: 'content',
+        queryKey: ['content'],
         queryFn: () => getContent<T>(),
-        onSuccess: () => {
-            queryClient.invalidateQueries('content');
-        },
     });
 };

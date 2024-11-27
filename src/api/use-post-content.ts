@@ -1,19 +1,22 @@
-import { queryClient } from '@/lib/react-query';
-import { apiClient } from '@/services/api-client';
 import { useMutation, UseMutationResult } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { apiClient } from '@/services/api-client';
+import { ContentFormData } from '@/lib/schemas';
+import { queryClient } from '@/lib/react-query';
 
-const postContent = async <T>(content: T): Promise<T> => {
-    const res = await apiClient.post('/content', content);
-    return res.data;
+const postContent = async (data: ContentFormData) => {
+    const response = await apiClient.post('/content', data);
+    return response.data;
 };
 
-export const usePostContent = <T>(): UseMutationResult<T, Error, T> => {
+export const usePostContent = (): UseMutationResult<
+    any,
+    Error,
+    ContentFormData
+> => {
     return useMutation({
-        mutationFn: (content: T) => postContent<T>(content),
+        mutationFn: postContent,
         onSuccess: () => {
-            queryClient.invalidateQueries('content');
-            toast.success('Content posted successfully');
+            queryClient.refetchQueries({ queryKey: ['content'] });
         },
     });
 };
