@@ -9,7 +9,7 @@ export const publicRoutes = ['/help'];
  *These do not require authentication.
  *@type {string[]}
  **/
-export const authRoutes = ['/login', 'signup'];
+export const authRoutes = ['/login', '/signup'];
 /**
  *The prefix for the API routes.
  *@type {string}

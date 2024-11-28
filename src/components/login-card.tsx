@@ -41,7 +41,7 @@ function LoginCard() {
     };
 
     return (
-        <Card className='mx-auto max-w-sm'>
+        <Card className='mx-auto max-w-sm p-3'>
             <CardHeader className='space-y-1'>
                 <CardTitle className='text-2xl font-bold'>Login</CardTitle>
                 <CardDescription>
