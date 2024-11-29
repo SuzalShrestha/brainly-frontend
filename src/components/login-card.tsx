@@ -5,83 +5,132 @@ import {
     CardTitle,
     CardDescription,
     CardContent,
+    CardFooter,
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { useState } from 'react';
-import { signIn } from 'next-auth/react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { loginSchema, type LoginFormData } from '@/lib/schemas';
 import { toast } from 'sonner';
+import { useLogin } from '@/api/use-login';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { signIn } from 'next-auth/react';
 
 function LoginCard() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
-    const handleLogin = async () => {
-        try {
-            setIsLoading(true);
-            toast.loading('Logging in...');
-            const result = await signIn('credentials', {
-                email,
-                password,
-            });
-            if (result?.error) {
-                toast.dismiss();
-                toast.error('Invalid email or password');
-                return;
+    const router = useRouter();
+    const { mutate: login, isPending } = useLogin();
+
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm<LoginFormData>({
+        resolver: zodResolver(loginSchema),
+        defaultValues: {
+            email: '',
+            password: '',
+        },
+    });
+
+    const onSubmit = (data: LoginFormData) => {
+        toast.promise(
+            new Promise(async (resolve, reject) => {
+                await signIn('credentials', {
+                    email: data.email,
+                    password: data.password,
+                })
+                    .then((result) => {
+                        if (result?.error) {
+                            reject(new Error(result.error));
+                        } else {
+                            resolve(true);
+                        }
+                    })
+                    .catch((error) => {
+                        reject(error);
+                    });
+            }),
+            {
+                loading: 'Logging in...',
+                success: 'Logged in successfully!',
+                error: (error) => error.message || 'Failed to login',
             }
-            toast.dismiss();
-            toast.success('Logged in successfully');
-        } catch {
-            toast.dismiss();
-            toast.error('Something went wrong. Please try again.');
-        } finally {
-            setIsLoading(false);
-        }
+        );
     };
 
     return (
-        <Card className='mx-auto max-w-sm p-3'>
-            <CardHeader className='space-y-1'>
-                <CardTitle className='text-2xl font-bold'>Login</CardTitle>
-                <CardDescription>
-                    Enter your email and password to login to your account
+        <Card className='mx-auto w-full max-w-lg p-6'>
+            <CardHeader className='space-y-2'>
+                <CardTitle className='text-3xl font-bold'>Login</CardTitle>
+                <CardDescription className='text-base'>
+                    Welcome back! Please enter your credentials to continue.
                 </CardDescription>
             </CardHeader>
             <CardContent>
-                <div className='space-y-4'>
+                <form onSubmit={handleSubmit(onSubmit)} className='space-y-6'>
                     <div className='space-y-2'>
-                        <Label htmlFor='email'>Email</Label>
+                        <Label htmlFor='email' className='text-base'>
+                            Email
+                        </Label>
                         <Input
                             id='email'
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
                             type='email'
-                            placeholder='johndoe@example.com'
-                            required
-                            disabled={isLoading}
+                            {...register('email')}
+                            disabled={isPending}
+                            className={`h-11 text-base ${
+                                errors.email ? 'border-red-500' : ''
+                            }`}
+                            placeholder='john@example.com'
                         />
+                        {errors.email && (
+                            <p className='text-sm text-red-500'>
+                                {errors.email.message}
+                            </p>
+                        )}
                     </div>
                     <div className='space-y-2'>
-                        <Label htmlFor='password'>Password</Label>
+                        <Label htmlFor='password' className='text-base'>
+                            Password
+                        </Label>
                         <Input
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
                             id='password'
                             type='password'
-                            required
-                            disabled={isLoading}
+                            {...register('password')}
+                            disabled={isPending}
+                            className={`h-11 text-base ${
+                                errors.password ? 'border-red-500' : ''
+                            }`}
+                            placeholder='••••••••'
                         />
+                        {errors.password && (
+                            <p className='text-sm text-red-500'>
+                                {errors.password.message}
+                            </p>
+                        )}
                     </div>
                     <Button
-                        onClick={() => handleLogin()}
-                        className='w-full'
-                        disabled={isLoading}
+                        type='submit'
+                        className='w-full h-11 text-base'
+                        disabled={isPending}
                     >
-                        {isLoading ? 'Logging in...' : 'Login'}
+                        {isPending ? 'Logging in...' : 'Login'}
                     </Button>
-                </div>
+                </form>
             </CardContent>
+            <CardFooter className='flex justify-center border-t pt-6 mt-6'>
+                <p className='text-base text-muted-foreground'>
+                    Don't have an account?{' '}
+                    <Link
+                        href='/signup'
+                        className='text-primary font-medium hover:underline'
+                    >
+                        Sign up
+                    </Link>
+                </p>
+            </CardFooter>
         </Card>
     );
 }

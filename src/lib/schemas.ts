@@ -53,3 +53,17 @@ export const signupResponseSchema = z.object({
 });
 
 export type SignupResponse = z.infer<typeof signupResponseSchema>;
+
+export const loginSchema = z.object({
+    email: z
+        .string()
+        .email('Invalid email address')
+        .min(5, 'Email must be at least 5 characters')
+        .max(100, 'Email must be less than 100 characters'),
+    password: z
+        .string()
+        .min(8, 'Password must be at least 8 characters')
+        .max(100, 'Password must be less than 100 characters'),
+});
+
+export type LoginFormData = z.infer<typeof loginSchema>;
