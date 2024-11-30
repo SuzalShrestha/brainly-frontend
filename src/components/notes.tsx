@@ -27,6 +27,7 @@ import {
 import { Badge } from './ui/badge';
 import { toast } from 'sonner';
 import { Skeleton } from './ui/skeleton';
+import { useDeleteContent } from '@/api/use-delete-content';
 
 interface NotesProps {
     filter?: 'all' | 'favorites' | 'shared';
@@ -151,6 +152,7 @@ function NoteSkeleton() {
 interface NoteProps extends NoteType {}
 
 function Note({
+    _id,
     title,
     link,
     tags,
@@ -166,6 +168,26 @@ function Note({
                 loading: `${action}ing note...`,
                 success: `Note ${action.toLowerCase()}d successfully`,
                 error: `Failed to ${action.toLowerCase()} note`,
+            }
+        );
+    };
+    const { mutate: deleteContent } = useDeleteContent();
+    const handleDelete = (id: string) => {
+        toast.promise(
+            new Promise((resolve, reject) => {
+                deleteContent(id, {
+                    onSuccess: () => {
+                        resolve(true);
+                    },
+                    onError: (error) => {
+                        reject(error);
+                    },
+                });
+            }),
+            {
+                loading: 'Deleting note...',
+                success: 'Note deleted successfully',
+                error: 'Failed to delete note',
             }
         );
     };
@@ -220,7 +242,7 @@ function Note({
                             <DropdownMenuSeparator />
                             <DropdownMenuItem
                                 className='text-destructive'
-                                onClick={() => handleAction('Delete')}
+                                onClick={() => handleDelete(_id)}
                             >
                                 <Trash className='mr-2 h-4 w-4' />
                                 Delete

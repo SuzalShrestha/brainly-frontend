@@ -1,4 +1,3 @@
-import { queryClient } from '@/lib/react-query';
 import { apiClient } from '@/services/api-client';
 import { useQuery, UseQueryResult } from '@tanstack/react-query';
 
