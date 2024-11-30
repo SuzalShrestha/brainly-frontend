@@ -6,7 +6,6 @@ import {
     Pencil,
     Share2,
     Star,
-    Trash,
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { useGetContent } from '@/api/use-get-content';
@@ -28,6 +27,8 @@ import { Badge } from './ui/badge';
 import { toast } from 'sonner';
 import { Skeleton } from './ui/skeleton';
 import { useDeleteContent } from '@/api/use-delete-content';
+import { DeleteAlert } from './delete-alert';
+import { usePostAddFavorite } from '@/api/use-add-favorite';
 
 interface NotesProps {
     filter?: 'all' | 'favorites' | 'shared';
@@ -42,6 +43,7 @@ interface NoteType {
     type: 'note' | 'link' | 'image';
     createdAt: string;
     isFavorite?: boolean;
+    isShared?: boolean;
 }
 
 export function Notes({ filter = 'all' }: NotesProps) {
@@ -93,7 +95,7 @@ export function Notes({ filter = 'all' }: NotesProps) {
             case 'favorites':
                 return note.isFavorite;
             case 'shared':
-                return note.type === 'shared';
+                return note.isShared;
             default:
                 return true;
         }
@@ -160,6 +162,9 @@ function Note({
     createdAt: date,
     isFavorite,
 }: NoteProps) {
+    const { mutate: deleteContent, isPending: isDeleting } = useDeleteContent();
+    const { mutate: postAddFavorite, isPending: isAddingFavorite } =
+        usePostAddFavorite();
     const handleAction = (action: string) => {
         toast.promise(
             // Simulate API call
@@ -171,25 +176,29 @@ function Note({
             }
         );
     };
-    const { mutate: deleteContent } = useDeleteContent();
-    const handleDelete = (id: string) => {
-        toast.promise(
-            new Promise((resolve, reject) => {
-                deleteContent(id, {
-                    onSuccess: () => {
-                        resolve(true);
-                    },
-                    onError: (error) => {
-                        reject(error);
-                    },
-                });
-            }),
-            {
-                loading: 'Deleting note...',
-                success: 'Note deleted successfully',
-                error: 'Failed to delete note',
-            }
-        );
+    const handleDelete = () => {
+        deleteContent(_id, {
+            onSuccess: () => {
+                toast.success('Note deleted successfully');
+            },
+            onError: (error) => {
+                toast.error(error.message || 'Failed to delete note');
+            },
+        });
+    };
+    const handleAddFavorite = () => {
+        postAddFavorite(_id, {
+            onSuccess: () => {
+                if (isFavorite) {
+                    toast.success('Note removed from favorites');
+                } else {
+                    toast.success('Note added to favorites');
+                }
+            },
+            onError: (error) => {
+                toast.error(error.message || 'Failed to add to favorites');
+            },
+        });
     };
 
     return (
@@ -228,11 +237,8 @@ function Note({
                                 Share
                             </DropdownMenuItem>
                             <DropdownMenuItem
-                                onClick={() =>
-                                    handleAction(
-                                        isFavorite ? 'Unfavorite' : 'Favorite'
-                                    )
-                                }
+                                onClick={handleAddFavorite}
+                                disabled={isAddingFavorite}
                             >
                                 <Star className='mr-2 h-4 w-4' />
                                 {isFavorite
@@ -240,12 +246,11 @@ function Note({
                                     : 'Add to favorites'}
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                                className='text-destructive'
-                                onClick={() => handleDelete(_id)}
-                            >
-                                <Trash className='mr-2 h-4 w-4' />
-                                Delete
+                            <DropdownMenuItem asChild>
+                                <DeleteAlert
+                                    onDelete={handleDelete}
+                                    isLoading={isDeleting}
+                                />
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>

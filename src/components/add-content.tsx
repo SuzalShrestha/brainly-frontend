@@ -29,7 +29,7 @@ import {
 
 export function AddContentDialog() {
     const [open, setOpen] = useState(false);
-    const { mutate, isLoading } = usePostContent();
+    const { mutate, isPending: isLoading } = usePostContent();
     const {
         register,
         handleSubmit,

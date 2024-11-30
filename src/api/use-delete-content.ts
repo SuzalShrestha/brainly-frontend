@@ -1,17 +1,14 @@
-import { useMutation, UseMutationResult } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { apiClient } from '@/services/api-client';
 import { queryClient } from '@/lib/react-query';
 
-const deleteContent = async (id: string) => {
-    const response = await apiClient.delete(`/content/${id}`);
-    return response.data;
-};
-
-export const useDeleteContent = (): UseMutationResult<any, Error, string> => {
+export const useDeleteContent = () => {
     return useMutation({
-        mutationFn: deleteContent,
+        mutationFn: async (id: string) => {
+            await apiClient.delete(`/content/${id}`);
+        },
         onSuccess: () => {
-            queryClient.refetchQueries({ queryKey: ['content'] });
+            queryClient.invalidateQueries({ queryKey: ['content'] });
         },
     });
 };
