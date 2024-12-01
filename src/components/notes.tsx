@@ -29,6 +29,7 @@ import { Skeleton } from './ui/skeleton';
 import { useDeleteContent } from '@/api/use-delete-content';
 import { DeleteAlert } from './delete-alert';
 import { usePostAddFavorite } from '@/api/use-add-favorite';
+import { useSearchParams } from 'next/navigation';
 
 interface NotesProps {
     filter?: 'all' | 'favorites' | 'shared';
@@ -48,6 +49,8 @@ interface NoteType {
 
 export function Notes({ filter = 'all' }: NotesProps) {
     const { data, error, isLoading } = useGetContent<NoteType[]>();
+    const searchParams = useSearchParams();
+    const type = searchParams.get('type');
 
     if (error) {
         toast.error('Failed to load notes');
@@ -89,7 +92,6 @@ export function Notes({ filter = 'all' }: NotesProps) {
             </motion.div>
         );
     }
-
     const filteredNotes = data.filter((note) => {
         switch (filter) {
             case 'favorites':
@@ -100,6 +102,7 @@ export function Notes({ filter = 'all' }: NotesProps) {
                 return true;
         }
     });
+    const filterTypeNotes = filteredNotes.filter((note) => note.type === type);
 
     return (
         <AnimatePresence>
@@ -110,18 +113,31 @@ export function Notes({ filter = 'all' }: NotesProps) {
                 transition={{ duration: 0.2 }}
                 className='grid grid-cols-3 gap-4 my-5'
             >
-                {filteredNotes.map((note) => (
-                    <motion.div
-                        key={note._id}
-                        layout
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.2 }}
-                    >
-                        <Note {...note} />
-                    </motion.div>
-                ))}
+                {type
+                    ? filterTypeNotes.map((note) => (
+                          <motion.div
+                              key={note._id}
+                              layout
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              exit={{ opacity: 0 }}
+                              transition={{ duration: 0.2 }}
+                          >
+                              <Note {...note} />
+                          </motion.div>
+                      ))
+                    : filteredNotes.map((note) => (
+                          <motion.div
+                              key={note._id}
+                              layout
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              exit={{ opacity: 0 }}
+                              transition={{ duration: 0.2 }}
+                          >
+                              <Note {...note} />
+                          </motion.div>
+                      ))}
             </motion.div>
         </AnimatePresence>
     );

@@ -5,6 +5,7 @@ import {
     CardTitle,
     CardDescription,
     CardContent,
+    CardFooter,
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -12,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { toast } from 'sonner';
+import Link from 'next/link';
 
 function LoginCard() {
     const [email, setEmail] = useState('');
@@ -82,6 +84,17 @@ function LoginCard() {
                     </Button>
                 </div>
             </CardContent>
+            <CardFooter className='flex justify-center border-t pt-6 mt-6'>
+                <p className='text-base text-muted-foreground'>
+                    Don't have an account?{' '}
+                    <Link
+                        href='/signup'
+                        className='text-primary font-medium hover:underline'
+                    >
+                        Sign up
+                    </Link>
+                </p>
+            </CardFooter>
         </Card>
     );
 }

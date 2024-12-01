@@ -8,30 +8,32 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { FileText, Link, Twitter, Youtube } from 'lucide-react';
+import { FileText, Link as LinkIcon, Twitter, Youtube } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 const items = [
     {
         title: 'Tweets',
-        url: '#',
+        url: 'tweet',
         icon: Twitter,
     },
     {
         title: 'Videos',
-        url: '#',
+        url: 'video',
         icon: Youtube,
     },
     {
         title: 'Documents',
-        url: '#',
+        url: 'document',
         icon: FileText,
     },
     {
         title: 'Links',
-        url: '#',
-        icon: Link,
+        url: 'link',
+        icon: LinkIcon,
     },
 ];
 export function AppSidebar() {
+    const { push } = useRouter();
     return (
         <Sidebar>
             <SidebarHeader />
@@ -42,10 +44,14 @@ export function AppSidebar() {
                         {items.map((item) => (
                             <SidebarMenuItem key={item.title}>
                                 <SidebarMenuButton asChild>
-                                    <a href={item.url}>
+                                    <div
+                                        onClick={() => {
+                                            push(`/dashboard?type=${item.url}`);
+                                        }}
+                                    >
                                         <item.icon />
                                         <span>{item.title}</span>
-                                    </a>
+                                    </div>
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
                         ))}

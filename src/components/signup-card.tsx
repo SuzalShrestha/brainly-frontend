@@ -48,7 +48,6 @@ export function SignupCard() {
                         resolve(true);
                     },
                     onError: (error) => {
-                        console.log('Signup error:', error);
                         reject(error);
                     },
                 });
