@@ -1,4 +1,3 @@
-'use client';
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import './globals.css';
@@ -14,15 +13,14 @@ const geistMono = localFont({
     weight: '100 900',
 });
 
-// export const metadata: Metadata = {
-//     title: 'Brainly',
-//     description: 'Your Second Brain',
-// };
+export const metadata: Metadata = {
+    title: 'Brainly',
+    description: 'Your Second Brain',
+};
 import { Toaster } from 'sonner';
-import { QueryClientProvider } from '@tanstack/react-query';
-import { queryClient } from '@/lib/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { ThemeProvider as NextThemesProvider } from 'next-themes';
+import { ThemeProvider } from '@/providers/theme-provider';
+import { ReactQueryProvider } from '@/providers/react-query-provider';
 
 export default function RootLayout({
     children,
@@ -34,18 +32,13 @@ export default function RootLayout({
             <body
                 className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}
             >
-                <NextThemesProvider
-                    attribute='class'
-                    defaultTheme='system'
-                    enableSystem
-                    disableTransitionOnChange
-                >
-                    <QueryClientProvider client={queryClient}>
+                <ThemeProvider>
+                    <ReactQueryProvider>
                         <Toaster position={'top-left'} />
                         <ReactQueryDevtools initialIsOpen={false} />
                         {children}
-                    </QueryClientProvider>
-                </NextThemesProvider>
+                    </ReactQueryProvider>
+                </ThemeProvider>
             </body>
         </html>
     );

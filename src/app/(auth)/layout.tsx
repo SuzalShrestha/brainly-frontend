@@ -1,7 +1,7 @@
 import { geistSans } from '@/lib/fonts';
 
 export const metadata = {
-    title: 'Brainly',
+    title: 'Login to Brainly',
     description: 'Your Second Brain',
 };
 
