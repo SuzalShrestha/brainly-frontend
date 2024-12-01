@@ -40,7 +40,7 @@ interface NoteType {
     content: string;
     link?: string;
     tags: string[];
-    type: 'note' | 'link' | 'image';
+    type: 'link' | 'video' | 'document' | 'tweet';
     createdAt: string;
     isFavorite?: boolean;
     isShared?: boolean;

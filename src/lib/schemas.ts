@@ -5,7 +5,7 @@ export const contentSchema = z.object({
     content: z.string().min(1, 'Content is required'),
     link: z.string().url().optional().or(z.literal('')),
     tags: z.array(z.string()).default([]),
-    type: z.enum(['note', 'link', 'image']).default('note'),
+    type: z.enum(['link', 'video', 'document', 'tweet']).default('link'),
 });
 
 export type ContentFormData = z.infer<typeof contentSchema>;

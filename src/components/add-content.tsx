@@ -45,7 +45,6 @@ export function AddContentDialog() {
     });
 
     const onSubmit = (data: ContentFormData) => {
-        console.log(data);
         toast.promise(
             new Promise((resolve, reject) => {
                 mutate(data, {
@@ -99,9 +98,7 @@ export function AddContentDialog() {
                                     <SelectValue placeholder='Select type' />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value='youtube'>
-                                        Youtube
-                                    </SelectItem>
+                                    <SelectItem value='video'>Video</SelectItem>
                                     <SelectItem value='link'>Link</SelectItem>
                                     <SelectItem value='tweet'>Tweet</SelectItem>
                                     <SelectItem value='document'>
