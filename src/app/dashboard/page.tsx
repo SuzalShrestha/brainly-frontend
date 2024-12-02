@@ -1,15 +1,37 @@
 'use client';
 import { AddContentDialog } from '@/components/add-content';
 import { Notes } from '@/components/notes';
-import { ShareDialog } from '@/components/share-dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useRouter } from 'next/dist/client/components/navigation';
-import { useState } from 'react';
-type TabValue = 'all' | 'favorites' | 'shared';
+import { useState, Suspense } from 'react';
+import { ShareDialog } from '@/components/share-dialog';
+import { Skeleton } from '@/components/ui/skeleton';
 
-export default function Home() {
-    const [activeTab, setActiveTab] = useState<TabValue>('all');
-    const router = useRouter();
+function NotesWithSearch({
+    filter,
+}: {
+    filter: 'all' | 'favorites' | 'shared';
+}) {
+    return (
+        <Suspense
+            fallback={
+                <div className='grid grid-cols-3 gap-4 my-5'>
+                    {[...Array(6)].map((_, i) => (
+                        <Skeleton key={i} className='h-[200px]' />
+                    ))}
+                </div>
+            }
+        >
+            <Notes filter={filter} />
+        </Suspense>
+    );
+}
+
+export default function DashboardPage() {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [activeTab, setActiveTab] = useState<'all' | 'favorites' | 'shared'>(
+        'all'
+    );
+
     return (
         <div className='flex flex-col gap-6'>
             <div className='flex justify-between items-center'>
@@ -23,26 +45,23 @@ export default function Home() {
             <Tabs
                 defaultValue='all'
                 className='w-full'
-                onValueChange={(value) => setActiveTab(value as TabValue)}
+                onValueChange={(value) =>
+                    setActiveTab(value as 'all' | 'favorites' | 'shared')
+                }
             >
                 <TabsList>
-                    <TabsTrigger
-                        value='all'
-                        onClick={() => router.push('/dashboard')}
-                    >
-                        All Notes
-                    </TabsTrigger>
-                    <TabsTrigger value='shared'>Shared</TabsTrigger>
+                    <TabsTrigger value='all'>All Notes</TabsTrigger>
                     <TabsTrigger value='favorites'>Favorites</TabsTrigger>
+                    <TabsTrigger value='shared'>Shared</TabsTrigger>
                 </TabsList>
                 <TabsContent value='all'>
-                    <Notes filter='all' />
+                    <NotesWithSearch filter='all' />
                 </TabsContent>
                 <TabsContent value='favorites'>
-                    <Notes filter='favorites' />
+                    <NotesWithSearch filter='favorites' />
                 </TabsContent>
                 <TabsContent value='shared'>
-                    <Notes filter='shared' />
+                    <NotesWithSearch filter='shared' />
                 </TabsContent>
             </Tabs>
         </div>

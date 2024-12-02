@@ -7,7 +7,11 @@ const postAddFavorite = async (_id: string) => {
     return response.data;
 };
 
-export const usePostAddFavorite = (): UseMutationResult<any, Error, string> => {
+export const usePostAddFavorite = (): UseMutationResult<
+    string,
+    Error,
+    string
+> => {
     return useMutation({
         mutationFn: postAddFavorite,
         onSuccess: () => {

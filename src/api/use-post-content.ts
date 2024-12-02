@@ -9,7 +9,7 @@ const postContent = async (data: ContentFormData) => {
 };
 
 export const usePostContent = (): UseMutationResult<
-    any,
+    string,
     Error,
     ContentFormData
 > => {

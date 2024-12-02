@@ -86,7 +86,7 @@ function LoginCard() {
             </CardContent>
             <CardFooter className='flex justify-center border-t pt-6 mt-6'>
                 <p className='text-base text-muted-foreground'>
-                    Don't have an account?{' '}
+                    Don&apos;t have an account?{' '}
                     <Link
                         href='/signup'
                         className='text-primary font-medium hover:underline'

@@ -52,9 +52,9 @@ interface NoteType {
 }
 
 export function Notes({ filter = 'all' }: NotesProps) {
-    const { data, error, isLoading } = useGetContent<NoteType[]>();
     const searchParams = useSearchParams();
     const type = searchParams.get('type');
+    const { data, error, isLoading } = useGetContent<NoteType[]>();
 
     if (error) {
         toast.error('Failed to load notes');
@@ -171,8 +171,6 @@ function NoteSkeleton() {
     );
 }
 
-interface NoteProps extends NoteType {}
-
 function Note({
     _id,
     title,
@@ -182,7 +180,7 @@ function Note({
     createdAt: date,
     isFavorite,
     type,
-}: NoteProps) {
+}: NoteType) {
     const [isEditing, setIsEditing] = useState(false);
     const [editedTitle, setEditedTitle] = useState(title);
     const [editedContent, setEditedContent] = useState(content);

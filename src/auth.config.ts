@@ -45,10 +45,14 @@ export default {
                     cookies().set({
                         name: cookieName,
                         value: cookieValue,
-                        httpOnly: true, // the parsing of httpOnly returns an empty string, so either have some logic to set it to boolean, or set it manually
+                        httpOnly: true,
+                        //@ts-expect-error: TypeScript does not recognize the cookie expiration format
                         maxAge: parseInt(setCookie['Max-Age']),
-                        path: setCookie.Path,
+                        path: Array.isArray(setCookie.Path)
+                            ? setCookie.Path[0]
+                            : setCookie.Path || '/',
                         sameSite: 'strict',
+                        //@ts-expect-error: TypeScript does not recognize the cookie expiration format
                         expires: new Date(setCookie.Expires),
                         secure: true,
                     });
@@ -58,7 +62,7 @@ export default {
                     }
                     return null;
                 } catch (err) {
-                    throw new Error('Invalid login: ' + err.message);
+                    throw new Error('Invalid login: ' + (err as Error).message);
                 }
             },
         }),

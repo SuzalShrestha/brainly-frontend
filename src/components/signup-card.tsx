@@ -38,6 +38,7 @@ export function SignupCard() {
     });
 
     const onSubmit = (data: SignupFormData) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { confirmPassword, ...signupData } = data;
 
         toast.promise(
