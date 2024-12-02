@@ -29,12 +29,19 @@ export default function RootLayout({
 }>) {
     return (
         <html lang='en'>
+            <head>
+                {/* react-scan */}
+                {/* <script
+                    src='https://unpkg.com/react-scan/dist/auto.global.js'
+                    async
+                /> */}
+            </head>
             <body
                 className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}
             >
                 <ThemeProvider>
                     <ReactQueryProvider>
-                        <Toaster position={'top-left'} />
+                        <Toaster position={'bottom-right'} />
                         <ReactQueryDevtools initialIsOpen={false} />
                         {children}
                     </ReactQueryProvider>

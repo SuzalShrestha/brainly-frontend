@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Share2, Copy, Check } from 'lucide-react';
+import { Share2, Copy, Check, ArrowUpRight } from 'lucide-react';
 import { useShareContent } from '@/api/use-share-content';
 import { toast } from 'sonner';
 import {
@@ -105,6 +105,15 @@ export function ShareDialog() {
                             ) : (
                                 <Copy className='h-4 w-4' />
                             )}
+                        </Button>
+                        <Button
+                            variant='outline'
+                            size='icon'
+                            onClick={() => {
+                                window.open(shareData?.shareUrl, '_blank');
+                            }}
+                        >
+                            <ArrowUpRight className='h-4 w-4' />
                         </Button>
                     </div>
                     <AlertDialogFooter>

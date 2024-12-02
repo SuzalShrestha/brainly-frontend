@@ -4,7 +4,6 @@ import {
     Link as LinkIcon,
     MoreVertical,
     Pencil,
-    Share2,
     Star,
 } from 'lucide-react';
 import { Button } from './ui/button';
@@ -30,6 +29,11 @@ import { useDeleteContent } from '@/api/use-delete-content';
 import { DeleteAlert } from './delete-alert';
 import { usePostAddFavorite } from '@/api/use-add-favorite';
 import { useSearchParams } from 'next/navigation';
+import { useState } from 'react';
+import { useUpdateContent } from '@/api/use-update-content';
+import { Textarea } from './ui/textarea';
+import { Check, X } from 'lucide-react';
+import { Input } from './ui/input';
 
 interface NotesProps {
     filter?: 'all' | 'favorites' | 'shared';
@@ -177,54 +181,71 @@ function Note({
     content,
     createdAt: date,
     isFavorite,
+    type,
 }: NoteProps) {
+    const [isEditing, setIsEditing] = useState(false);
+    const [editedTitle, setEditedTitle] = useState(title);
+    const [editedContent, setEditedContent] = useState(content);
+    const [editedLink, setEditedLink] = useState(link || '');
+    const [editedTags, setEditedTags] = useState(tags.join(', '));
+
     const { mutate: deleteContent, isPending: isDeleting } = useDeleteContent();
     const { mutate: postAddFavorite, isPending: isAddingFavorite } =
         usePostAddFavorite();
-    const handleAction = (action: string) => {
-        toast.promise(
-            // Simulate API call
-            new Promise((resolve) => setTimeout(resolve, 1000)),
+    const { mutate: updateContent, isPending: isUpdating } = useUpdateContent();
+
+    const handleUpdate = () => {
+        const updatedTags = editedTags
+            .split(',')
+            .map((tag) => tag.trim())
+            .filter(Boolean);
+
+        updateContent(
             {
-                loading: `${action}ing note...`,
-                success: `Note ${action.toLowerCase()}d successfully`,
-                error: `Failed to ${action.toLowerCase()} note`,
+                _id,
+                title: editedTitle,
+                content: editedContent,
+                link: editedLink || undefined,
+                tags: updatedTags,
+                type,
+            },
+            {
+                onSuccess: () => {
+                    setIsEditing(false);
+                    toast.success('Note updated successfully');
+                },
+                onError: (error) => {
+                    toast.error(error.message || 'Failed to update note');
+                },
             }
         );
     };
-    const handleDelete = () => {
-        deleteContent(_id, {
-            onSuccess: () => {
-                toast.success('Note deleted successfully');
-            },
-            onError: (error) => {
-                toast.error(error.message || 'Failed to delete note');
-            },
-        });
-    };
-    const handleAddFavorite = () => {
-        postAddFavorite(_id, {
-            onSuccess: () => {
-                if (isFavorite) {
-                    toast.success('Note removed from favorites');
-                } else {
-                    toast.success('Note added to favorites');
-                }
-            },
-            onError: (error) => {
-                toast.error(error.message || 'Failed to add to favorites');
-            },
-        });
+
+    const handleCancel = () => {
+        setEditedTitle(title);
+        setEditedContent(content);
+        setEditedLink(link || '');
+        setEditedTags(tags.join(', '));
+        setIsEditing(false);
     };
 
     return (
         <Card className='group relative'>
             <CardHeader className='grid gap-4'>
                 <div className='flex items-start justify-between space-x-4'>
-                    <div className='space-y-2'>
-                        <h3 className='font-semibold leading-none tracking-tight'>
-                            {title}
-                        </h3>
+                    <div className='space-y-2 w-full'>
+                        {isEditing ? (
+                            <Input
+                                value={editedTitle}
+                                onChange={(e) => setEditedTitle(e.target.value)}
+                                className='font-semibold'
+                                placeholder='Title'
+                            />
+                        ) : (
+                            <h3 className='font-semibold leading-none tracking-tight'>
+                                {title}
+                            </h3>
+                        )}
                         <div className='flex items-center space-x-1 text-sm text-muted-foreground'>
                             <Calendar className='h-3 w-3' />
                             <time dateTime={date}>
@@ -232,71 +253,113 @@ function Note({
                             </time>
                         </div>
                     </div>
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant='ghost' className='h-8 w-8 p-0'>
-                                <MoreVertical className='h-4 w-4' />
-                                <span className='sr-only'>Open menu</span>
+                    {isEditing ? (
+                        <div className='flex gap-2'>
+                            <Button
+                                variant='outline'
+                                size='icon'
+                                onClick={handleCancel}
+                                disabled={isUpdating}
+                            >
+                                <X className='h-4 w-4' />
                             </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align='end'>
-                            <DropdownMenuItem
-                                onClick={() => handleAction('Edit')}
+                            <Button
+                                variant='outline'
+                                size='icon'
+                                onClick={handleUpdate}
+                                disabled={isUpdating}
                             >
-                                <Pencil className='mr-2 h-4 w-4' />
-                                Edit
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                                onClick={() => handleAction('Share')}
-                            >
-                                <Share2 className='mr-2 h-4 w-4' />
-                                Share
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                                onClick={handleAddFavorite}
-                                disabled={isAddingFavorite}
-                            >
-                                <Star className='mr-2 h-4 w-4' />
-                                {isFavorite
-                                    ? 'Remove from favorites'
-                                    : 'Add to favorites'}
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem asChild>
-                                <DeleteAlert
-                                    onDelete={handleDelete}
-                                    isLoading={isDeleting}
-                                />
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                                <Check className='h-4 w-4' />
+                            </Button>
+                        </div>
+                    ) : (
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant='ghost' className='h-8 w-8 p-0'>
+                                    <MoreVertical className='h-4 w-4' />
+                                    <span className='sr-only'>Open menu</span>
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align='end'>
+                                <DropdownMenuItem
+                                    onClick={() => setIsEditing(true)}
+                                >
+                                    <Pencil className='mr-2 h-4 w-4' />
+                                    Edit
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    onClick={() => postAddFavorite(_id)}
+                                    disabled={isAddingFavorite}
+                                >
+                                    <Star className='mr-2 h-4 w-4' />
+                                    {isFavorite
+                                        ? 'Remove from favorites'
+                                        : 'Add to favorites'}
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem asChild>
+                                    <DeleteAlert
+                                        onDelete={() => deleteContent(_id)}
+                                        isLoading={isDeleting}
+                                    />
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    )}
                 </div>
             </CardHeader>
             <CardContent className='grid gap-4'>
-                <div className='line-clamp-3 text-sm text-muted-foreground'>
-                    {content}
-                </div>
-                {link && (
-                    <div className='flex items-center space-x-2 text-sm text-blue-600'>
-                        <LinkIcon className='h-3 w-3' />
-                        <a
-                            href={link}
-                            target='_blank'
-                            rel='noopener noreferrer'
-                            className='hover:underline'
-                        >
-                            {new URL(link).hostname}
-                        </a>
-                    </div>
+                {isEditing ? (
+                    <>
+                        <Textarea
+                            value={editedContent}
+                            onChange={(e) => setEditedContent(e.target.value)}
+                            className='min-h-[100px]'
+                            placeholder='Content'
+                        />
+                        <Input
+                            value={editedLink}
+                            onChange={(e) => setEditedLink(e.target.value)}
+                            placeholder='Link (optional)'
+                            type='url'
+                        />
+                    </>
+                ) : (
+                    <>
+                        <div className='line-clamp-3 text-sm text-muted-foreground'>
+                            {content}
+                        </div>
+                        {link && (
+                            <div className='flex items-center space-x-2 text-sm text-blue-600'>
+                                <LinkIcon className='h-3 w-3' />
+                                <a
+                                    href={link}
+                                    target='_blank'
+                                    rel='noopener noreferrer'
+                                    className='hover:underline'
+                                >
+                                    {new URL(link).hostname}
+                                </a>
+                            </div>
+                        )}
+                    </>
                 )}
             </CardContent>
             <CardFooter>
-                <div className='flex flex-wrap gap-2'>
-                    {tags.map((tag) => (
-                        <Badge key={tag} variant='secondary'>
-                            {tag}
-                        </Badge>
-                    ))}
+                <div className='flex flex-wrap gap-2 w-full'>
+                    {isEditing ? (
+                        <Input
+                            value={editedTags}
+                            onChange={(e) => setEditedTags(e.target.value)}
+                            placeholder='Tags (comma separated)'
+                        />
+                    ) : (
+                        tags.map((tag) => (
+                            <Badge key={tag} variant='secondary'>
+                                {tag}
+                            </Badge>
+                        ))
+                    )}
                 </div>
             </CardFooter>
         </Card>
