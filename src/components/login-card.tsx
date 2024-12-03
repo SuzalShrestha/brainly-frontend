@@ -16,12 +16,16 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { LoginFormData } from '@/lib/schemas';
 import { loginSchema } from '@/lib/schemas';
-import { useLogin } from '@/api/use-login';
 import { EyeIcon, EyeOffIcon } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { signIn } from 'next-auth/react';
+import { useSearchParams, useRouter } from 'next/navigation';
 function LoginCard() {
-    const { mutate: login, isPending: isLoading } = useLogin();
     const [showPassword, setShowPassword] = useState(false);
+    const router = useRouter();
+    const [isLoading, setIsLoading] = useState(false);
+    const searchParams = useSearchParams();
+    const [isError] = useState(searchParams.get('error'));
     const {
         register,
         handleSubmit,
@@ -35,29 +39,24 @@ function LoginCard() {
     });
 
     const handleLogin = async (data: LoginFormData) => {
+        setIsLoading(true);
         try {
-            toast.promise(
-                new Promise((resolve, reject) => {
-                    login(data, {
-                        onSuccess: () => {
-                            resolve(true);
-                        },
-                        onError: (error) => {
-                            reject(error);
-                        },
-                    });
-                }),
-                {
-                    loading: 'Logging in...',
-                    success: 'Logged in successfully',
-                    error: 'Invalid email or password',
-                }
-            );
+            await signIn('credentials', data);
         } catch {
             toast.error('Something went wrong. Please try again.');
+        } finally {
+            setIsLoading(false);
         }
     };
-
+    const clearParams = () => {
+        router.push('/login');
+    };
+    useEffect(() => {
+        if (isError) {
+            clearParams();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isError]);
     return (
         <Card className='mx-auto max-w-sm p-3'>
             <CardHeader className='space-y-1'>
@@ -112,9 +111,9 @@ function LoginCard() {
                                 )}
                             </div>
                         </div>
-                        {errors.password && (
+                        {isError && (
                             <p className='text-red-500'>
-                                {errors.password.message as string}
+                                Invalid email or password
                             </p>
                         )}
                         <Button
