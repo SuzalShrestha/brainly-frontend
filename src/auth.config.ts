@@ -1,7 +1,7 @@
 import { type NextAuthConfig } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
-import qs from 'querystring';
-import { cookies } from 'next/headers';
+import axios from 'axios';
+
 export default {
     providers: [
         Credentials({
@@ -16,55 +16,43 @@ export default {
                             'Please enter a valid email and password'
                         );
                     }
-                    const res = await fetch(
+
+                    const response = await axios.post(
                         `${process.env.NEXT_PUBLIC_API_URL}/api/v1/login`,
                         {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify(credentials),
-                            credentials: 'include',
+                            email: credentials.email,
+                            password: credentials.password,
                         }
                     );
-                    // Check if the response is ok here
-                    // Parse the cookie string with querystring module
-                    const setCookie = qs.decode(
-                        res.headers.get('set-cookie') as string,
-                        '; ',
-                        '='
-                    ); // cast this to a type with the structure of the cookie received from your backend
-
-                    // Extract the cookie name and the value from the first entry in the
-                    // setCookie object
-                    const [cookieName, cookieValue] = Object.entries(
-                        setCookie
-                    )[0] as [string, string];
-
-                    // set the values that you need for your cookie
-                    cookies().set({
-                        name: cookieName,
-                        value: cookieValue,
-                        httpOnly: true,
-                        //@ts-expect-error: TypeScript does not recognize the cookie expiration format
-                        maxAge: parseInt(setCookie['Max-Age']),
-                        path: Array.isArray(setCookie.Path)
-                            ? setCookie.Path[0]
-                            : setCookie.Path || '/',
-                        sameSite: 'strict',
-                        //@ts-expect-error: TypeScript does not recognize the cookie expiration format
-                        expires: new Date(setCookie.Expires),
-                        secure: true,
-                    });
-                    const user = await res.json();
-                    if (res.ok && user) {
-                        return user;
+                    const user = await response.data.data.user;
+                    if (!user || !user.token) {
+                        throw new Error('Invalid credentials');
                     }
-                    return null;
-                } catch (err) {
-                    throw new Error('Invalid login: ' + (err as Error).message);
+                    return user;
+                } catch (error) {
+                    console.error('Auth error:', error);
+                    throw new Error('Authentication failed');
                 }
             },
         }),
     ],
+    callbacks: {
+        async jwt({ token, user }) {
+            if (user) {
+                // When user signs in, add token to JWT
+                token.token = user.token;
+                token.id = user.id;
+            }
+            return token;
+        },
+        async session({ session, token }) {
+            // Add token to session
+            if (token) {
+                session.token = token.token as string;
+                session.user.id = token.id as string;
+            }
+            return session;
+        },
+    },
+    trustHost: true,
 } satisfies NextAuthConfig;
