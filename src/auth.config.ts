@@ -26,12 +26,12 @@ export default {
                     );
                     const user = await response.data.data.user;
                     if (!user || !user.token) {
-                        throw new Error('Invalid credentials');
+                        return null;
                     }
                     return user;
                 } catch (error) {
                     console.error('Auth error:', error);
-                    throw new Error('Authentication failed');
+                    return null;
                 }
             },
         }),
