@@ -10,35 +10,49 @@ import {
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { useState } from 'react';
-import { signIn } from 'next-auth/react';
 import { toast } from 'sonner';
 import Link from 'next/link';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { LoginFormData } from '@/lib/schemas';
+import { loginSchema } from '@/lib/schemas';
+import { useLogin } from '@/api/use-login';
 
 function LoginCard() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
-    const handleLogin = async () => {
+    const { mutate: login, isPending: isLoading } = useLogin();
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm<LoginFormData>({
+        resolver: zodResolver(loginSchema),
+        defaultValues: {
+            email: '',
+            password: '',
+        },
+    });
+
+    const handleLogin = async (data: LoginFormData) => {
         try {
-            setIsLoading(true);
-            toast.loading('Logging in...');
-            const result = await signIn('credentials', {
-                email,
-                password,
-            });
-            if (result?.error) {
-                toast.dismiss();
-                toast.error('Invalid email or password');
-                return;
-            }
-            toast.dismiss();
-            toast.success('Logged in successfully');
+            toast.promise(
+                new Promise((resolve, reject) => {
+                    login(data, {
+                        onSuccess: () => {
+                            resolve(true);
+                        },
+                        onError: (error) => {
+                            reject(error);
+                        },
+                    });
+                }),
+                {
+                    loading: 'Logging in...',
+                    success: 'Logged in successfully',
+                    error: 'Invalid email or password',
+                }
+            );
         } catch {
-            toast.dismiss();
             toast.error('Something went wrong. Please try again.');
-        } finally {
-            setIsLoading(false);
         }
     };
 
@@ -51,38 +65,43 @@ function LoginCard() {
                 </CardDescription>
             </CardHeader>
             <CardContent>
-                <div className='space-y-4'>
-                    <div className='space-y-2'>
-                        <Label htmlFor='email'>Email</Label>
-                        <Input
-                            id='email'
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            type='email'
-                            placeholder='johndoe@example.com'
-                            required
+                <form onSubmit={handleSubmit(handleLogin)}>
+                    <div className='space-y-4'>
+                        <div className='space-y-2'>
+                            <Label htmlFor='email'>Email</Label>
+                            <Input
+                                {...register('email')}
+                                placeholder='johndoe@example.com'
+                                disabled={isLoading}
+                            />
+                        </div>
+                        {errors.email && (
+                            <p className='text-red-500'>
+                                {errors.email.message as string}
+                            </p>
+                        )}
+                        <div className='space-y-2'>
+                            <Label htmlFor='password'>Password</Label>
+                            <Input
+                                {...register('password')}
+                                placeholder='********'
+                                disabled={isLoading}
+                            />
+                        </div>
+                        {errors.password && (
+                            <p className='text-red-500'>
+                                {errors.password.message as string}
+                            </p>
+                        )}
+                        <Button
+                            type='submit'
+                            className='w-full'
                             disabled={isLoading}
-                        />
+                        >
+                            {isLoading ? 'Logging in...' : 'Login'}
+                        </Button>
                     </div>
-                    <div className='space-y-2'>
-                        <Label htmlFor='password'>Password</Label>
-                        <Input
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            id='password'
-                            type='password'
-                            required
-                            disabled={isLoading}
-                        />
-                    </div>
-                    <Button
-                        onClick={() => handleLogin()}
-                        className='w-full'
-                        disabled={isLoading}
-                    >
-                        {isLoading ? 'Logging in...' : 'Login'}
-                    </Button>
-                </div>
+                </form>
             </CardContent>
             <CardFooter className='flex justify-center border-t pt-6 mt-6'>
                 <p className='text-base text-muted-foreground'>

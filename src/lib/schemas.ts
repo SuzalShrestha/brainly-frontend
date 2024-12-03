@@ -53,3 +53,17 @@ export const signupResponseSchema = z.object({
 });
 
 export type SignupResponse = z.infer<typeof signupResponseSchema>;
+
+export const loginSchema = z.object({
+    email: z.string().email('Invalid email address'),
+    password: z
+        .string()
+        .min(8, 'Password must be at least 8 characters')
+        .max(100, 'Password must be less than 100 characters')
+        .regex(
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
+            'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character'
+        ),
+});
+
+export type LoginFormData = z.infer<typeof loginSchema>;
