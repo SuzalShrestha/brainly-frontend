@@ -17,9 +17,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { LoginFormData } from '@/lib/schemas';
 import { loginSchema } from '@/lib/schemas';
 import { useLogin } from '@/api/use-login';
-
+import { EyeIcon, EyeOffIcon } from 'lucide-react';
+import { useState } from 'react';
 function LoginCard() {
     const { mutate: login, isPending: isLoading } = useLogin();
+    const [showPassword, setShowPassword] = useState(false);
     const {
         register,
         handleSubmit,
@@ -82,11 +84,33 @@ function LoginCard() {
                         )}
                         <div className='space-y-2'>
                             <Label htmlFor='password'>Password</Label>
-                            <Input
-                                {...register('password')}
-                                placeholder='********'
-                                disabled={isLoading}
-                            />
+                            <div className='flex items-center relative'>
+                                <div className='w-full'>
+                                    <Input
+                                        {...register('password')}
+                                        type={
+                                            showPassword ? 'text' : 'password'
+                                        }
+                                        placeholder='********'
+                                        disabled={isLoading}
+                                    />
+                                </div>
+                                {showPassword ? (
+                                    <EyeIcon
+                                        className='absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer pr-2'
+                                        onClick={() =>
+                                            setShowPassword(!showPassword)
+                                        }
+                                    />
+                                ) : (
+                                    <EyeOffIcon
+                                        className='absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer pr-2'
+                                        onClick={() =>
+                                            setShowPassword(!showPassword)
+                                        }
+                                    />
+                                )}
+                            </div>
                         </div>
                         {errors.password && (
                             <p className='text-red-500'>
