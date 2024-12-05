@@ -21,7 +21,6 @@ const searchContent = async (query: string): Promise<SearchResponse> => {
     const response = await apiClient.get<SearchResponse>(
         `/content/search?q=${encodeURIComponent(query)}`
     );
-    console.log(response.data);
     return response.data;
 };
 
