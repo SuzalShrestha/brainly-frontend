@@ -18,7 +18,7 @@ export default function RootLayout({
                 <main className='flex flex-col gap-2 w-full m-10'>
                     <div className='flex justify-between'>
                         <SidebarTrigger />
-                        <CommandDialogSearch />
+                        <CommandDialogSearch className='hidden sm:block' />
                         <div className='flex gap-2'>
                             <ThemeToggle />
                             <Button onClick={() => signOut()} variant={'ghost'}>

@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useState, Suspense } from 'react';
 import { ShareDialog } from '@/components/share-dialog';
 import { Skeleton } from '@/components/ui/skeleton';
+import { CommandDialogSearch } from '@/components/command-search';
 
 function NotesWithSearch({
     filter,
@@ -14,7 +15,7 @@ function NotesWithSearch({
     return (
         <Suspense
             fallback={
-                <div className='grid grid-cols-3 gap-4 my-5'>
+                <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 my-5'>
                     {[...Array(6)].map((_, i) => (
                         <Skeleton key={i} className='h-[200px]' />
                     ))}
@@ -27,18 +28,24 @@ function NotesWithSearch({
 }
 
 export default function DashboardPage() {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [activeTab, setActiveTab] = useState<'all' | 'favorites' | 'shared'>(
         'all'
     );
 
     return (
-        <div className='flex flex-col gap-6'>
-            <div className='flex justify-between items-center'>
-                <div className='font-bold text-3xl'>Notes</div>
-                <div className='flex gap-4'>
-                    <ShareDialog />
-                    <AddContentDialog />
+        <div className='flex flex-col gap-4 p-2 sm:p-6'>
+            {/* Header Section */}
+            <div className='flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between'>
+                <div className='font-bold text-2xl sm:text-3xl'>Notes</div>
+
+                <div className='flex flex-col sm:flex-row gap-2 sm:items-center'>
+                    <div className='w-full sm:w-auto sm:hidden'>
+                        <CommandDialogSearch />
+                    </div>
+                    <div className='flex justify-between sm:justify-start gap-2 mt-2 sm:mt-0'>
+                        <ShareDialog />
+                        <AddContentDialog />
+                    </div>
                 </div>
             </div>
 
@@ -49,11 +56,29 @@ export default function DashboardPage() {
                     setActiveTab(value as 'all' | 'favorites' | 'shared')
                 }
             >
-                <TabsList>
-                    <TabsTrigger value='all'>All Notes</TabsTrigger>
-                    <TabsTrigger value='favorites'>Favorites</TabsTrigger>
-                    <TabsTrigger value='shared'>Shared</TabsTrigger>
-                </TabsList>
+                <div className='overflow-x-auto'>
+                    <TabsList className='w-full sm:w-auto flex justify-start sm:inline-flex'>
+                        <TabsTrigger
+                            value='all'
+                            className='flex-1 sm:flex-none'
+                        >
+                            All Notes
+                        </TabsTrigger>
+                        <TabsTrigger
+                            value='favorites'
+                            className='flex-1 sm:flex-none'
+                        >
+                            Favorites
+                        </TabsTrigger>
+                        <TabsTrigger
+                            value='shared'
+                            className='flex-1 sm:flex-none'
+                        >
+                            Shared
+                        </TabsTrigger>
+                    </TabsList>
+                </div>
+
                 <TabsContent value='all'>
                     <NotesWithSearch filter='all' />
                 </TabsContent>

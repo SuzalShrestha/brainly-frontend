@@ -74,7 +74,7 @@ export function Notes({ filter = 'all' }: NotesProps) {
 
     if (isLoading) {
         return (
-            <div className='grid grid-cols-3 gap-4 my-5'>
+            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 my-5'>
                 {[...Array(6)].map((_, i) => (
                     <NoteSkeleton key={i} />
                 ))}
@@ -115,7 +115,7 @@ export function Notes({ filter = 'all' }: NotesProps) {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 20 }}
                 transition={{ duration: 0.2 }}
-                className='grid grid-cols-3 gap-4 my-5'
+                className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 my-5'
             >
                 {type
                     ? filterTypeNotes.map((note) => (
@@ -150,7 +150,7 @@ export function Notes({ filter = 'all' }: NotesProps) {
 function NoteSkeleton() {
     return (
         <Card className='group relative'>
-            <CardHeader className='grid gap-4'>
+            <CardHeader className='grid gap-4 p-4 sm:p-6'>
                 <div className='flex items-start justify-between space-x-4'>
                     <div className='space-y-2 w-full'>
                         <Skeleton className='h-4 w-3/4' />
@@ -158,10 +158,10 @@ function NoteSkeleton() {
                     </div>
                 </div>
             </CardHeader>
-            <CardContent className='grid gap-4'>
+            <CardContent className='grid gap-4 px-4 sm:px-6'>
                 <Skeleton className='h-20' />
             </CardContent>
-            <CardFooter>
+            <CardFooter className='px-4 sm:px-6'>
                 <div className='flex gap-2'>
                     <Skeleton className='h-6 w-16' />
                     <Skeleton className='h-6 w-16' />
