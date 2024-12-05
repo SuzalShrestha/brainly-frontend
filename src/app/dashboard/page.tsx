@@ -28,6 +28,7 @@ function NotesWithSearch({
 }
 
 export default function DashboardPage() {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [activeTab, setActiveTab] = useState<'all' | 'favorites' | 'shared'>(
         'all'
     );
