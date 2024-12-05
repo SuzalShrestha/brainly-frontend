@@ -17,7 +17,12 @@ import { SearchResult, useGetSearch } from '@/api/use-get-search';
 import { Badge } from './ui/badge';
 import { useDebounce } from 'use-debounce';
 
-export function CommandDialogSearch() {
+export function CommandDialogSearch({
+    className,
+    ...props
+}: {
+    className?: string;
+} & React.HTMLAttributes<HTMLDivElement>) {
     const [open, setOpen] = React.useState(false);
     const [inputValue, setInputValue] = React.useState('');
     const [showLoader, setShowLoader] = React.useState(false);
@@ -53,7 +58,7 @@ export function CommandDialogSearch() {
     }, [isLoading]);
 
     return (
-        <>
+        <div className={cn(className)} {...props}>
             <Button
                 variant='outline'
                 className={cn(
@@ -181,6 +186,6 @@ export function CommandDialogSearch() {
                     )}
                 </CommandList>
             </CommandDialog>
-        </>
+        </div>
     );
 }
