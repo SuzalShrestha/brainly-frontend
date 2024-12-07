@@ -6,6 +6,7 @@ import { useState, Suspense } from 'react';
 import { ShareDialog } from '@/components/share-dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { CommandDialogSearch } from '@/components/command-search';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 function NotesWithSearch({
     filter,
@@ -32,7 +33,7 @@ export default function DashboardPage() {
     const [activeTab, setActiveTab] = useState<'all' | 'favorites' | 'shared'>(
         'all'
     );
-
+    const isMobile = useIsMobile();
     return (
         <div className='flex flex-col gap-4 p-2 sm:p-6'>
             {/* Header Section */}
@@ -40,9 +41,11 @@ export default function DashboardPage() {
                 <div className='font-bold text-2xl sm:text-3xl'>Notes</div>
 
                 <div className='flex flex-col sm:flex-row gap-2 sm:items-center'>
-                    <div className='w-full sm:w-auto sm:hidden'>
-                        <CommandDialogSearch />
-                    </div>
+                    {isMobile && (
+                        <div className='w-full sm:w-auto sm:hidden'>
+                            <CommandDialogSearch />
+                        </div>
+                    )}
                     <div className='flex justify-between sm:justify-start gap-2 mt-2 sm:mt-0'>
                         <ShareDialog />
                         <AddContentDialog />
