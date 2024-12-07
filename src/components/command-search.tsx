@@ -128,22 +128,12 @@ export function CommandDialogSearch({
                             </div>
                         </CommandEmpty>
                     )}
-                    {inputValue && results.length > 0 && (
-                        <CommandGroup
-                            heading={`Search Results (${results?.length ?? 0})`}
-                        >
-                            {results?.map((item: SearchResult) => (
-                                <CommandItem
-                                    key={item._id}
-                                    value={item.title}
-                                    onSelect={() => {
-                                        router.push(
-                                            `/dashboard?type=${item.type}&id=${item._id}`
-                                        );
-                                        setOpen(false);
-                                    }}
-                                    className='py-3'
-                                >
+
+                    {inputValue &&
+                        results.length > 0 &&
+                        results?.map((item: SearchResult) => (
+                            <>
+                                <div key={item._id}>
                                     <div className='flex flex-col space-y-2 w-full'>
                                         <div className='flex items-center justify-between'>
                                             <div className='flex items-center font-bold'>
@@ -180,10 +170,9 @@ export function CommandDialogSearch({
                                             </div>
                                         )} */}
                                     </div>
-                                </CommandItem>
-                            ))}
-                        </CommandGroup>
-                    )}
+                                </div>
+                            </>
+                        ))}
                 </CommandList>
             </CommandDialog>
         </div>
