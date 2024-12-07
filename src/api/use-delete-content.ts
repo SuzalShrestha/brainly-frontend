@@ -1,6 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import { apiClient } from '@/services/api-client';
 import { queryClient } from '@/lib/react-query';
+import { toast } from 'sonner';
 
 export const useDeleteContent = () => {
     return useMutation({
@@ -9,6 +10,10 @@ export const useDeleteContent = () => {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['content'] });
+            toast.success('Content deleted successfully');
+        },
+        onError: (error) => {
+            toast.error(error.message || 'Failed to delete content');
         },
     });
 };

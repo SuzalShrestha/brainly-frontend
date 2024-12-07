@@ -28,7 +28,6 @@ export function CommandDialogSearch({
     const [showLoader, setShowLoader] = React.useState(false);
     const router = useRouter();
     const [debouncedQuery] = useDebounce(inputValue, 300);
-
     const { data: searchData, isLoading } = useGetSearch(debouncedQuery);
     const results = searchData?.data || [];
 
@@ -118,7 +117,7 @@ export function CommandDialogSearch({
                             <CommandSeparator />
                         </>
                     )}
-                    {inputValue && results.length === 0 ? (
+                    {inputValue && results.length === 0 && (
                         <CommandEmpty>
                             <div className='flex flex-col items-center py-4'>
                                 <Search className='h-8 w-8 text-muted-foreground mb-2' />
@@ -128,7 +127,8 @@ export function CommandDialogSearch({
                                 </p>
                             </div>
                         </CommandEmpty>
-                    ) : (
+                    )}
+                    {inputValue && results.length > 0 && (
                         <CommandGroup
                             heading={`Search Results (${results?.length ?? 0})`}
                         >
@@ -158,11 +158,11 @@ export function CommandDialogSearch({
                                                 {item.type}
                                             </Badge>
                                         </div>
-                                        {item.content && (
+                                        {/* {item.content && (
                                             <p className='text-sm text-muted-foreground line-clamp-1 truncate'>
                                                 {item.content}
                                             </p>
-                                        )}
+                                        )} */}
                                         {/* {item.tags && item.tags.length > 0 && (
                                             <div className='flex items-center gap-2 mt-1'>
                                                 <Tag className='h-3 w-3 text-muted-foreground' />
