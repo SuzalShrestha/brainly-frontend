@@ -14,7 +14,10 @@ export const useSignup = () => {
         unknown
     >({
         mutationFn: async (data) => {
-            const response = await apiClient.post<unknown>('/signup', data);
+            const response = await apiClient.post<unknown>(
+                '/auth/signup',
+                data
+            );
             return signupResponseSchema.parse(response.data);
         },
     });

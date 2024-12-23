@@ -3,7 +3,7 @@ import { useQuery, UseQueryResult } from '@tanstack/react-query';
 
 const getContent = async <T>(): Promise<T> => {
     const res = await apiClient.get('/content');
-    return res.data;
+    return res.data.data;
 };
 
 export const useGetContent = <T>(): UseQueryResult<T, Error> => {
