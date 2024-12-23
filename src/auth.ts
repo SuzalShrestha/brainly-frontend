@@ -10,7 +10,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     events: {
         signOut: async () => {
             //remove cookies from the browser
-            cookies().delete('token');
+            cookies().delete('accessToken');
+            cookies().delete('refreshToken');
         },
     },
     session: {

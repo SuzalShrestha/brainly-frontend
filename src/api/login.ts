@@ -5,7 +5,6 @@ export const loginServerClient = axios.create({
     headers: {
         'Content-Type': 'application/json',
     },
-    withCredentials: true,
 });
 export const login = async (credentials: {
     email: string;
@@ -13,12 +12,13 @@ export const login = async (credentials: {
 }) => {
     const response = await loginServerClient.post('/login', credentials);
     const cookiesStore = await cookies();
-    cookiesStore.set('accessToken', response.data.data.user.accessToken, {
+    const user = response.data.data.user;
+    cookiesStore.set('accessToken', user.accessToken, {
         secure: process.env.NODE_ENV === 'production',
     });
-    cookiesStore.set('refreshToken', response.data.data.user.refreshToken, {
+    cookiesStore.set('refreshToken', user.refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
     });
-    return response;
+    return user;
 };

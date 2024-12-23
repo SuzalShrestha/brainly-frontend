@@ -47,12 +47,12 @@ export const signupSchema = z
 
 export type SignupFormData = z.infer<typeof signupSchema>;
 
-export const signupResponseSchema = z.object({
-    message: z.string(),
-    errors: z.record(z.array(z.string())).optional(),
-});
+// export const signupResponseSchema = z.object({
+//     message: z.string(),
+//     errors: z.record(z.array(z.string())).optional(),
+// });
 
-export type SignupResponse = z.infer<typeof signupResponseSchema>;
+// export type SignupResponse = z.infer<typeof signupResponseSchema>;
 
 export const loginSchema = z.object({
     email: z.string().email('Invalid email address'),
