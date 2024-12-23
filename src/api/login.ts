@@ -11,16 +11,14 @@ export const login = async (credentials: {
     email: string;
     password: string;
 }) => {
-    const response = loginServerClient.post('/login', credentials);
+    const response = await loginServerClient.post('/login', credentials);
     const cookiesStore = await cookies();
-    response.then((res) => {
-        cookiesStore.set('accessToken', res.data.data.user.accessToken, {
-            secure: process.env.NODE_ENV === 'production',
-        });
-        cookiesStore.set('refreshToken', res.data.data.user.refreshToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-        });
+    cookiesStore.set('accessToken', response.data.data.user.accessToken, {
+        secure: process.env.NODE_ENV === 'production',
+    });
+    cookiesStore.set('refreshToken', response.data.data.user.refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
     });
     return response;
 };
