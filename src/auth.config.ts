@@ -1,36 +1,31 @@
 import { type NextAuthConfig } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
-import axios from 'axios';
+import { login } from './api/login';
 
 export default {
     providers: [
         Credentials({
             credentials: {
-                email: {},
-                password: {},
+                email: { type: 'text', placeholder: '' },
+                password: { type: 'password', placeholder: '' },
             },
-            authorize: async (credentials) => {
-                try {
-                    if (!credentials.email || !credentials.password) {
-                        throw new Error(
-                            'Please enter a valid email and password'
-                        );
-                    }
+            async authorize(credentials) {
+                if (!credentials?.email || !credentials?.password) {
+                    return null;
+                }
 
-                    const response = await axios.post(
-                        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/login`,
-                        {
-                            email: credentials.email,
-                            password: credentials.password,
-                        }
-                    );
-                    const user = await response.data.data.user;
-                    if (!user || !user.token) {
+                try {
+                    const response = await login({
+                        email: credentials.email,
+                        password: credentials.password,
+                    });
+
+                    const user = response.data.data.user;
+                    if (!user || !user.accessToken) {
                         return null;
                     }
                     return user;
-                } catch (error) {
-                    console.error('Auth error:', error);
+                } catch {
                     return null;
                 }
             },
@@ -40,7 +35,6 @@ export default {
         async jwt({ token, user }) {
             if (user) {
                 // When user signs in, add token to JWT
-                token.token = user.token;
                 token.id = user.id;
             }
             return token;
@@ -48,7 +42,6 @@ export default {
         async session({ session, token }) {
             // Add token to session
             if (token) {
-                session.token = token.token as string;
                 session.user.id = token.id as string;
             }
             return session;
