@@ -7,7 +7,10 @@ export const loginServerClient = axios.create({
     },
     withCredentials: true,
 });
-export const login = async (credentials) => {
+export const login = async (credentials: {
+    email: string;
+    password: string;
+}) => {
     const response = loginServerClient.post('/login', credentials);
     const cookiesStore = await cookies();
     response.then((res) => {

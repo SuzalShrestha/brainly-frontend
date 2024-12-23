@@ -16,8 +16,8 @@ export default {
 
                 try {
                     const response = await login({
-                        email: credentials.email,
-                        password: credentials.password,
+                        email: credentials.email as string,
+                        password: credentials.password as string,
                     });
 
                     const user = response.data.data.user;
