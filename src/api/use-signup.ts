@@ -1,14 +1,15 @@
 import { useMutation } from '@tanstack/react-query';
 import {
     SignupFormData,
-    signupResponseSchema,
-    type SignupResponse,
+    // signupResponseSchema,
+    // type SignupResponse,
 } from '@/lib/schemas';
 import { apiClient } from '@/services/api-client';
 
 export const useSignup = () => {
     return useMutation<
-        SignupResponse,
+        // SignupResponse,
+        unknown,
         Error,
         Omit<SignupFormData, 'confirmPassword'>,
         unknown
@@ -18,7 +19,7 @@ export const useSignup = () => {
                 '/auth/signup',
                 data
             );
-            return signupResponseSchema.parse(response.data);
+            return response.data;
         },
     });
 };

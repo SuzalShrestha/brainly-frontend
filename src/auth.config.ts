@@ -15,12 +15,10 @@ export default {
                 }
 
                 try {
-                    const response = await login({
+                    const user = await login({
                         email: credentials.email as string,
                         password: credentials.password as string,
                     });
-
-                    const user = response.data.data.user;
                     if (!user || !user.accessToken) {
                         return null;
                     }
