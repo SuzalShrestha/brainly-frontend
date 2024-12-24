@@ -30,7 +30,6 @@ const refreshAccessToken = async () => {
         const newAccessToken = response.data.data.accessToken;
         Cookies.set('accessToken', newAccessToken);
         if (!newAccessToken) {
-            signOut();
             throw new Error('Invalid token');
         }
         return newAccessToken;

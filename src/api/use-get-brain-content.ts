@@ -13,7 +13,7 @@ interface BrainContent {
 
 const getBrainContent = async (id: string): Promise<BrainContent[]> => {
     const res = await apiClient.get(`/brain/${id}`);
-    return res.data;
+    return res.data.data;
 };
 
 export const useGetBrainContent = (id: string) => {
