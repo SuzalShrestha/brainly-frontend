@@ -10,7 +10,7 @@ const shareContent = async (): Promise<ShareResponse> => {
     const response = await apiClient.post('/brain/share', {
         share: true,
     });
-    return response.data;
+    return response.data.data;
 };
 
 export const useShareContent = (): UseMutationResult<

@@ -18,10 +18,10 @@ interface SearchResponse {
 
 const searchContent = async (query: string): Promise<SearchResponse> => {
     if (!query) return { data: [], total: 0 };
-    const response = await apiClient.get<SearchResponse>(
+    const response = await apiClient.get(
         `/content/search?q=${encodeURIComponent(query)}`
     );
-    return response.data;
+    return response.data.data;
 };
 
 export const useGetSearch = (query: string) => {
