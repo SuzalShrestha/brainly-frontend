@@ -53,6 +53,7 @@ interface NoteType {
     createdAt: string;
     isFavorite?: boolean;
     isShared?: boolean;
+    updatedAt: string;
 }
 
 export function Notes({ filter = 'all' }: NotesProps) {
