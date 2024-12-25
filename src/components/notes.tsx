@@ -6,7 +6,6 @@ import {
     MoreVertical,
     Pencil,
     Star,
-    Trash2,
     Share2,
 } from 'lucide-react';
 import { Button } from './ui/button';
@@ -123,7 +122,6 @@ export function Notes({ filter = 'all' }: NotesProps) {
     const filterTypeNotes = filteredNotes.filter((note) => note.type === type);
 
     const selectedNote = data?.find((note) => note._id === selectedNoteId);
-
     return (
         <>
             <AnimatePresence>
@@ -411,7 +409,7 @@ function DetailedNote({ note }: { note: NoteType }) {
     const handleShare = async () => {};
 
     return (
-        <div className='flex flex-col h-full'>
+        <div className='flex flex-col h-full justify-center mt-5'>
             {/* Header */}
             <div className='flex-none border-b'>
                 <div className='flex-col px-6 py-6'>
@@ -502,6 +500,39 @@ function DetailedNote({ note }: { note: NoteType }) {
                             ))}
                         </div>
                     )}
+                </div>
+            </div>
+            {/* Footer - when was laast editted*/}
+            <div className='flex-none border-t'>
+                <div className='flex items-center justify-between px-6 py-6'>
+                    <div className='flex items-center gap-2'>
+                        <Circle className='h-3 w-3 text-muted-foreground' />
+                        <span className='text-sm text-muted-foreground'>
+                            Last edited on{' '}
+                            {new Date(note.updatedAt).toLocaleDateString(
+                                undefined,
+                                {
+                                    month: 'long',
+                                    day: 'numeric',
+                                }
+                            )}
+                        </span>
+                        {note.isShared ? (
+                            <Badge
+                                variant='outline'
+                                className='capitalize px-2.5 py-0.5'
+                            >
+                                public
+                            </Badge>
+                        ) : (
+                            <Badge
+                                variant='outline'
+                                className='capitalize px-2.5 py-0.5'
+                            >
+                                private
+                            </Badge>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>
