@@ -30,7 +30,9 @@ export function CommandDialogSearch({
     const [debouncedQuery] = useDebounce(inputValue, 300);
 
     const { data: searchData, isLoading } = useGetSearch(debouncedQuery);
+    console.log('searchdata', searchData);
     const results = searchData?.data || [];
+    console.log('results', results);
 
     //open command dialog on ctrl+k or cmd+k
     React.useEffect(() => {
@@ -128,7 +130,8 @@ export function CommandDialogSearch({
                                 </p>
                             </div>
                         </CommandEmpty>
-                    ) : (
+                    ) : null}
+                    {inputValue && results.length > 0 && (
                         <CommandGroup
                             heading={`Search Results (${results?.length ?? 0})`}
                         >
@@ -138,7 +141,7 @@ export function CommandDialogSearch({
                                     value={item.title}
                                     onSelect={() => {
                                         router.push(
-                                            `/dashboard?type=${item.type}&id=${item._id}`
+                                            `/dashboard?type=${item.type}&note=${item._id}`
                                         );
                                         setOpen(false);
                                     }}
