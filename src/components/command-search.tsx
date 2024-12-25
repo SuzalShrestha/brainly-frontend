@@ -30,9 +30,7 @@ export function CommandDialogSearch({
     const [debouncedQuery] = useDebounce(inputValue, 300);
 
     const { data: searchData, isLoading } = useGetSearch(debouncedQuery);
-    console.log('searchdata', searchData);
     const results = searchData?.data || [];
-    console.log('results', results);
 
     //open command dialog on ctrl+k or cmd+k
     React.useEffect(() => {
