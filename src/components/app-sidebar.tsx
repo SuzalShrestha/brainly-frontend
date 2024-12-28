@@ -8,23 +8,26 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { FileText, Link as LinkIcon, Twitter, Youtube } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { YoutubeIcon } from './ui/youtube';
+import { FilePenLineIcon } from './ui/file-pen-line';
+import { LinkIcon } from './ui/link';
+import { MessageCircleMoreIcon } from './ui/message-circle-more';
 const items = [
     {
         title: 'Tweets',
         url: 'tweet',
-        icon: Twitter,
+        icon: MessageCircleMoreIcon,
     },
     {
         title: 'Videos',
         url: 'video',
-        icon: Youtube,
+        icon: YoutubeIcon,
     },
     {
         title: 'Documents',
         url: 'document',
-        icon: FileText,
+        icon: FilePenLineIcon,
     },
     {
         title: 'Links',

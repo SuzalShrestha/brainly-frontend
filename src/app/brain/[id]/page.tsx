@@ -9,10 +9,10 @@ import {
     CardHeader,
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, Link as LinkIcon } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
-
+import { CalendarCogIcon } from '@/components/ui/calendar-cog';
+import { LinkIcon } from '@/components/ui/link';
 export default function BrainPage({ params }: { params: { id: string } }) {
     const { data, error, isLoading } = useGetBrainContent(params.id);
     if (error) {
@@ -134,7 +134,7 @@ function BrainContent({
                         {title}
                     </h3>
                     <div className='flex items-center space-x-1 text-sm text-muted-foreground'>
-                        <Calendar className='h-3 w-3' />
+                        <CalendarCogIcon />
                         <time dateTime={date}>
                             {new Date(date).toLocaleDateString()}
                         </time>
@@ -147,7 +147,7 @@ function BrainContent({
                 </div>
                 {link && (
                     <div className='flex items-center space-x-2 text-sm text-blue-600'>
-                        <LinkIcon className='h-3 w-3' />
+                        <LinkIcon />
                         <a
                             href={link}
                             target='_blank'

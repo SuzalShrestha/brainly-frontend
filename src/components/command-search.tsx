@@ -1,6 +1,6 @@
 'use client';
 import * as React from 'react';
-import { Search, Star, Calendar, Loader2 } from 'lucide-react';
+import { Calendar, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import {
     CommandDialog,
@@ -16,6 +16,8 @@ import { cn } from '@/lib/utils';
 import { SearchResult, useGetSearch } from '@/api/use-get-search';
 import { Badge } from './ui/badge';
 import { useDebounce } from 'use-debounce';
+import { SearchIcon } from './ui/search-icon';
+import { SparklesIcon } from './ui/sparkles';
 
 export function CommandDialogSearch({
     className,
@@ -66,7 +68,7 @@ export function CommandDialogSearch({
                 )}
                 onClick={() => setOpen(true)}
             >
-                <Search className='mr-2 h-4 w-4' />
+                <SearchIcon />
                 <span className='hidden lg:inline-flex'>Search notes...</span>
                 <span className='inline-flex lg:hidden'>Search...</span>
                 <kbd className='pointer-events-none absolute right-[0.3rem] top-[0.3rem] hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex'>
@@ -102,7 +104,7 @@ export function CommandDialogSearch({
                                 //     router.push('/dashboard?type=favorite')
                                 // }
                                 >
-                                    <Star className='mr-2 h-4 w-4' />
+                                    <SparklesIcon className='mr-2 h-4 w-4' />
                                     <span>Favorite Notes</span>
                                 </CommandItem>
                                 <CommandItem
@@ -121,7 +123,7 @@ export function CommandDialogSearch({
                     {inputValue && results.length === 0 ? (
                         <CommandEmpty>
                             <div className='flex flex-col items-center py-4'>
-                                <Search className='h-8 w-8 text-muted-foreground mb-2' />
+                                <SearchIcon />
                                 <p>
                                     No results found for &quot;{inputValue}
                                     &quot;

@@ -2,8 +2,11 @@ import { usePostAddFavorite } from '@/api/use-add-favorite';
 import { NoteType } from '@/types/notes';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
-import { Share2, Star, Calendar, Circle, Link as LinkIcon } from 'lucide-react';
+import { Circle, Waypoints } from 'lucide-react';
+import { LinkIcon } from './ui/link';
 import { cn } from '@/lib/utils';
+import { SparklesIcon } from './ui/sparkles';
+import { CalendarCogIcon } from './ui/calendar-cog';
 function DetailedNote({ note }: { note: NoteType }) {
     const { mutate: postAddFavorite } = usePostAddFavorite();
     const handleShare = async () => {};
@@ -24,7 +27,7 @@ function DetailedNote({ note }: { note: NoteType }) {
                                 className='h-9 w-9 hover:bg-muted/60'
                                 onClick={() => postAddFavorite(note._id)}
                             >
-                                <Star
+                                <SparklesIcon
                                     className={cn(
                                         'h-4 w-4',
                                         note.isFavorite &&
@@ -38,12 +41,12 @@ function DetailedNote({ note }: { note: NoteType }) {
                                 className='h-9 w-9 hover:bg-muted/60'
                                 onClick={handleShare}
                             >
-                                <Share2 className='h-4 w-4' />
+                                <Waypoints className='h-4 w-4' />
                             </Button>
                         </div>
                     </div>
                     <div className='flex items-center gap-2 text-sm text-muted-foreground'>
-                        <Calendar className='h-4 w-4' />
+                        <CalendarCogIcon />
                         <time dateTime={note.createdAt}>
                             {new Date(note.createdAt).toLocaleDateString(
                                 undefined,
@@ -80,7 +83,7 @@ function DetailedNote({ note }: { note: NoteType }) {
                             rel='noopener noreferrer'
                             className='inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors group'
                         >
-                            <LinkIcon className='h-4 w-4 transition-transform group-hover:-rotate-12' />
+                            <LinkIcon className='transition-transform group-hover:-rotate-12' />
                             <span className='underline-offset-4 hover:underline'>
                                 {new URL(note.link).hostname}
                             </span>
