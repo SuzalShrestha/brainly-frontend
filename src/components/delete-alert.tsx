@@ -11,8 +11,8 @@ import {
     AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
-import { Trash } from 'lucide-react';
 import { useState } from 'react';
+import { DeleteIcon } from './ui/delete';
 
 interface DeleteAlertProps {
     onDelete: () => void;
@@ -35,7 +35,7 @@ export function DeleteAlert({ onDelete, isLoading }: DeleteAlertProps) {
                     className='w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10'
                     disabled={isLoading}
                 >
-                    <Trash className='mr-2 h-4 w-4' />
+                    <DeleteIcon className='mr-2 h-4 w-4' />
                     {isLoading ? 'Deleting...' : 'Delete'}
                 </Button>
             </AlertDialogTrigger>

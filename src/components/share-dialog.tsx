@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Share2, Copy, Check, ArrowUpRight } from 'lucide-react';
+import { Copy, Check, ArrowUpRight, Waypoints } from 'lucide-react';
 import { useShareContent } from '@/api/use-share-content';
 import { toast } from 'sonner';
 import {
@@ -54,7 +54,7 @@ export function ShareDialog() {
             <AlertDialog>
                 <AlertDialogTrigger asChild>
                     <Button variant='outline'>
-                        <Share2 className='mr-2 h-4 w-4' />
+                        <Waypoints className='mr-2 h-4 w-4' />
                         Share
                     </Button>
                 </AlertDialogTrigger>

@@ -7,6 +7,7 @@ import { geistSans } from '@/lib/fonts';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { CommandDialogSearch } from '@/components/command-search';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { LogoutIcon } from '@/components/ui/logout';
 export default function RootLayout({
     children,
 }: Readonly<{
@@ -24,6 +25,7 @@ export default function RootLayout({
                         <div className='flex gap-2'>
                             <ThemeToggle />
                             <Button onClick={() => signOut()} variant={'ghost'}>
+                                <LogoutIcon />
                                 Logout
                             </Button>
                         </div>

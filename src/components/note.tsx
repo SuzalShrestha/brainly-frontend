@@ -4,15 +4,8 @@ import { useDeleteContent } from '@/api/use-delete-content';
 import { useUpdateContent } from '@/api/use-update-content';
 import { usePostAddFavorite } from '@/api/use-add-favorite';
 import { toast } from 'sonner';
-import {
-    MoreVertical,
-    Pencil,
-    Star,
-    Link as LinkIcon,
-    Calendar,
-    Check,
-    X,
-} from 'lucide-react';
+import { MoreVertical, Pencil, Check, X } from 'lucide-react';
+import { LinkIcon } from './ui/link';
 import {
     Card,
     CardContent,
@@ -31,6 +24,8 @@ import { Badge } from '@/components/ui/badge';
 import { Textarea } from './ui/textarea';
 import { Input } from './ui/input';
 import { DeleteAlert } from './delete-alert';
+import { SparklesIcon } from './ui/sparkles';
+import { CalendarCogIcon } from './ui/calendar-cog';
 function Note({
     _id,
     title,
@@ -114,7 +109,7 @@ function Note({
                             </h3>
                         )}
                         <div className='flex items-center space-x-1 text-sm text-muted-foreground'>
-                            <Calendar className='h-3 w-3' />
+                            <CalendarCogIcon />
                             <time dateTime={date}>
                                 {new Date(date).toLocaleDateString()}
                             </time>
@@ -158,10 +153,10 @@ function Note({
                                     onClick={() => postAddFavorite(_id)}
                                     disabled={isAddingFavorite}
                                 >
-                                    <Star className='mr-2 h-4 w-4' />
+                                    <SparklesIcon />
                                     {isFavorite
-                                        ? 'Remove from favorites'
-                                        : 'Add to favorites'}
+                                        ? 'Remove favorite'
+                                        : 'Add to favorite'}
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem asChild>
@@ -198,7 +193,7 @@ function Note({
                         </div>
                         {link && (
                             <div className='flex items-center space-x-2 text-sm text-blue-600'>
-                                <LinkIcon className='h-3 w-3' />
+                                <LinkIcon />
                                 <a
                                     href={link}
                                     target='_blank'

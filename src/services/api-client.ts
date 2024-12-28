@@ -13,7 +13,25 @@ export const apiClient = axios.create({
 // Add request interceptor to include token
 apiClient.interceptors.request.use(
     async (config) => {
+        const byPassUrls = [
+            '/auth/login',
+            '/auth/refresh-token',
+            '/auth/signup',
+            '/auth/logout',
+            '/auth/logout-all',
+            //add more urls to bypass here
+        ];
+        if (!config.url) {
+            throw new Error('No url');
+        }
+        if (byPassUrls.includes(config.url)) {
+            return config;
+        }
         const accessToken = Cookies.get('accessToken');
+        if (!accessToken) {
+            signOut();
+            throw new Error('No token');
+        }
         if (accessToken) {
             config.headers['Authorization'] = `Bearer ${accessToken}`;
         }
@@ -28,10 +46,10 @@ const refreshAccessToken = async () => {
     try {
         const response = await apiClient.post('/auth/refresh-token');
         const newAccessToken = response.data.data.accessToken;
-        Cookies.set('accessToken', newAccessToken);
         if (!newAccessToken) {
-            throw new Error('Invalid token');
+            throw new Error('No token Received');
         }
+        Cookies.set('accessToken', newAccessToken);
         return newAccessToken;
     } catch (error) {
         signOut();
