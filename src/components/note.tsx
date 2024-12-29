@@ -26,6 +26,13 @@ import { Input } from './ui/input';
 import { DeleteAlert } from './delete-alert';
 import { SparklesIcon } from './ui/sparkles';
 import { CalendarCogIcon } from './ui/calendar-cog';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { noteFormSchema } from '@/lib/schemas';
+import type { z } from 'zod';
+
+type FormData = z.infer<typeof noteFormSchema>;
+
 function Note({
     _id,
     title,
@@ -37,18 +44,24 @@ function Note({
     type,
 }: NoteType) {
     const [isEditing, setIsEditing] = useState(false);
-    const [editedTitle, setEditedTitle] = useState(title);
-    const [editedContent, setEditedContent] = useState(content);
-    const [editedLink, setEditedLink] = useState(link || '');
-    const [editedTags, setEditedTags] = useState(tags.join(', '));
+
+    const form = useForm<FormData>({
+        resolver: zodResolver(noteFormSchema),
+        defaultValues: {
+            title,
+            content,
+            link: link || '',
+            tags: tags.join(', '),
+        },
+    });
 
     const { mutate: deleteContent, isPending: isDeleting } = useDeleteContent();
     const { mutate: postAddFavorite, isPending: isAddingFavorite } =
         usePostAddFavorite();
     const { mutate: updateContent, isPending: isUpdating } = useUpdateContent();
 
-    const handleUpdate = () => {
-        const updatedTags = editedTags
+    const handleUpdate = (data: FormData) => {
+        const updatedTags = data.tags
             .split(',')
             .map((tag) => tag.trim())
             .filter(Boolean);
@@ -56,9 +69,9 @@ function Note({
         updateContent(
             {
                 _id,
-                title: editedTitle,
-                content: editedContent,
-                link: editedLink || undefined,
+                title: data.title,
+                content: data.content,
+                link: data.link || undefined,
                 tags: updatedTags,
                 type,
             },
@@ -75,34 +88,28 @@ function Note({
     };
 
     const handleCancel = () => {
-        setEditedTitle(title);
-        setEditedContent(content);
-        setEditedLink(link || '');
-        setEditedTags(tags.join(', '));
+        form.reset();
         setIsEditing(false);
     };
-    //removing note click functionality
-    // const handleNoteClick = () => {
-    //     const newSearchParams = new URLSearchParams(searchParams);
-    //     newSearchParams.set('note', _id);
-    //     router.push(`${pathname}?${newSearchParams.toString()}`);
-    // };
 
     return (
-        <Card
-            className='group relative hover:shadow-lg transition-shadow'
-            // onClick={handleNoteClick}
-        >
+        <Card className='group relative hover:shadow-lg transition-shadow'>
             <CardHeader className='grid gap-4'>
                 <div className='flex items-start justify-between space-x-4'>
                     <div className='space-y-2 w-full'>
                         {isEditing ? (
-                            <Input
-                                value={editedTitle}
-                                onChange={(e) => setEditedTitle(e.target.value)}
-                                className='font-semibold'
-                                placeholder='Title'
-                            />
+                            <form onSubmit={form.handleSubmit(handleUpdate)}>
+                                <Input
+                                    {...form.register('title')}
+                                    className='font-semibold'
+                                    placeholder='Title'
+                                />
+                                {form.formState.errors.title && (
+                                    <p className='text-sm text-red-500'>
+                                        {form.formState.errors.title.message}
+                                    </p>
+                                )}
+                            </form>
                         ) : (
                             <h3 className='font-semibold leading-none tracking-tight'>
                                 {title}
@@ -128,7 +135,7 @@ function Note({
                             <Button
                                 variant='outline'
                                 size='icon'
-                                onClick={handleUpdate}
+                                onClick={form.handleSubmit(handleUpdate)}
                                 disabled={isUpdating}
                             >
                                 <Check className='h-4 w-4' />
@@ -172,20 +179,32 @@ function Note({
             </CardHeader>
             <CardContent className='grid gap-4'>
                 {isEditing ? (
-                    <>
-                        <Textarea
-                            value={editedContent}
-                            onChange={(e) => setEditedContent(e.target.value)}
-                            className='min-h-[100px]'
-                            placeholder='Content'
-                        />
-                        <Input
-                            value={editedLink}
-                            onChange={(e) => setEditedLink(e.target.value)}
-                            placeholder='Link (optional)'
-                            type='url'
-                        />
-                    </>
+                    <form className='space-y-4'>
+                        <div>
+                            <Textarea
+                                {...form.register('content')}
+                                className='min-h-[100px]'
+                                placeholder='Content'
+                            />
+                            {form.formState.errors.content && (
+                                <p className='text-sm text-red-500'>
+                                    {form.formState.errors.content.message}
+                                </p>
+                            )}
+                        </div>
+                        <div>
+                            <Input
+                                {...form.register('link')}
+                                placeholder='Link (optional)'
+                                type='url'
+                            />
+                            {form.formState.errors.link && (
+                                <p className='text-sm text-red-500'>
+                                    {form.formState.errors.link.message}
+                                </p>
+                            )}
+                        </div>
+                    </form>
                 ) : (
                     <>
                         <div className='line-clamp-3 text-sm text-muted-foreground'>
@@ -211,8 +230,7 @@ function Note({
                 <div className='flex flex-wrap gap-2 w-full'>
                     {isEditing ? (
                         <Input
-                            value={editedTags}
-                            onChange={(e) => setEditedTags(e.target.value)}
+                            {...form.register('tags')}
                             placeholder='Tags (comma separated)'
                         />
                     ) : (

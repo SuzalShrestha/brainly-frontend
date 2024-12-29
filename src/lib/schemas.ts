@@ -60,3 +60,10 @@ export const loginSchema = z.object({
 });
 
 export type LoginFormData = z.infer<typeof loginSchema>;
+
+export const noteFormSchema = z.object({
+    title: z.string().min(1, 'Title is required'),
+    content: z.string().min(1, 'Content is required'),
+    link: z.string().url().optional().or(z.literal('')),
+    tags: z.string(),
+});
