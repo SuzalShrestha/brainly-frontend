@@ -20,6 +20,7 @@ import { EyeIcon, EyeOffIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useSearchParams, useRouter } from 'next/navigation';
+import Image from 'next/image';
 function LoginCard() {
     const [showPassword, setShowPassword] = useState(false);
     const router = useRouter();
@@ -116,6 +117,21 @@ function LoginCard() {
                                 Invalid email or password
                             </p>
                         )}
+                        <Button
+                            type='button'
+                            variant='outline'
+                            className='w-full'
+                            disabled={isLoading}
+                            onClick={() => signIn('google')}
+                        >
+                            <Image
+                                src='/logo/google.svg'
+                                alt='Google'
+                                height={20}
+                                width={20}
+                            />
+                            Login with Google
+                        </Button>
                         <Button
                             type='submit'
                             className='w-full'
