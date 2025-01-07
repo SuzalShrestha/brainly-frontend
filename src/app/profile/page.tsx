@@ -25,6 +25,7 @@ export default function ProfilePage() {
                 <CardContent className='space-y-4'>
                     <div className='flex items-center space-x-4'>
                         {session?.user?.image && (
+                            //@ts-ignore
                             <AvatarLogin src={session.user.image} />
                         )}
                         <div className='space-y-1'>
