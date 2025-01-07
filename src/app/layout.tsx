@@ -21,6 +21,7 @@ import { Toaster } from 'sonner';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { ThemeProvider } from '@/providers/theme-provider';
 import { ReactQueryProvider } from '@/providers/react-query-provider';
+import { SessionProvider } from 'next-auth/react';
 
 export default function RootLayout({
     children,
@@ -43,7 +44,7 @@ export default function RootLayout({
                     <ReactQueryProvider>
                         <Toaster position={'bottom-right'} />
                         <ReactQueryDevtools initialIsOpen={false} />
-                        {children}
+                        <SessionProvider>{children}</SessionProvider>
                     </ReactQueryProvider>
                 </ThemeProvider>
             </body>

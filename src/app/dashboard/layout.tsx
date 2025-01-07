@@ -1,19 +1,20 @@
 'use client';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/app-sidebar';
-import { signOut } from 'next-auth/react';
-import { Button } from '@/components/ui/button';
+import { useSession } from 'next-auth/react';
 import { geistSans } from '@/lib/fonts';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { CommandDialogSearch } from '@/components/command-search';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { LogoutIcon } from '@/components/ui/logout';
+import { ProfileMenu } from '@/components/profile-menu';
+
 export default function RootLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
     const isMobile = useIsMobile();
+    const { data: session } = useSession();
     return (
         <div className={`${geistSans.variable} min-h-screen bg-background`}>
             <SidebarProvider>
@@ -24,10 +25,11 @@ export default function RootLayout({
                         {!isMobile && <CommandDialogSearch />}
                         <div className='flex gap-2'>
                             <ThemeToggle />
-                            <Button onClick={() => signOut()} variant={'ghost'}>
-                                <LogoutIcon />
-                                Logout
-                            </Button>
+                            <ProfileMenu
+                                image={session?.user?.image}
+                                name={session?.user?.name}
+                                email={session?.user?.email}
+                            />
                         </div>
                     </div>
                     {children}
