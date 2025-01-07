@@ -62,6 +62,7 @@ export default {
                 const cookiesStore = await cookies();
                 const user = data.data.user;
                 cookiesStore.set('accessToken', user.accessToken, {
+                    secure: process.env.NODE_ENV === 'production',
                     sameSite:
                         process.env.NODE_ENV === 'production' ? 'none' : 'lax',
                     priority: 'high',
