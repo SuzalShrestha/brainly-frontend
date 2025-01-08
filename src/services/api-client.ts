@@ -17,8 +17,6 @@ apiClient.interceptors.request.use(
             '/auth/login',
             '/auth/refresh-token',
             '/auth/signup',
-            '/auth/logout',
-            '/auth/logout-all',
             //add more urls to bypass here
         ];
         if (!config.url) {
@@ -28,10 +26,6 @@ apiClient.interceptors.request.use(
             return config;
         }
         const accessToken = Cookies.get('accessToken');
-        if (!accessToken) {
-            signOut();
-            throw new Error('No token');
-        }
         if (accessToken) {
             config.headers['Authorization'] = `Bearer ${accessToken}`;
         }
@@ -45,14 +39,21 @@ apiClient.interceptors.request.use(
 const refreshAccessToken = async () => {
     try {
         const response = await apiClient.post('/auth/refresh-token');
-        const newAccessToken = response.data.data.accessToken;
+        const newAccessToken = response?.data?.data?.accessToken;
         if (!newAccessToken) {
-            throw new Error('No token Received');
+            signOut({
+                redirectTo: '/logout-success',
+            });
+            throw new Error('Refresh Token expired');
         }
-        Cookies.set('accessToken', newAccessToken);
+        Cookies.set('accessToken', newAccessToken, {
+            secure: true,
+            //1h in day format
+            expires: 0.04167,
+            sameSite: 'None',
+        });
         return newAccessToken;
     } catch (error) {
-        signOut();
         throw error;
     }
 };
@@ -66,15 +67,12 @@ apiClient.interceptors.response.use(
             '/auth/login',
             '/auth/refresh-token',
             '/auth/signup',
-            '/auth/logout',
-            '/auth/logout-all',
             //add more urls to bypass here
         ];
         if (!error.config || !error.config.url) {
             throw error;
         }
-        const accessToken = Cookies.get('accessToken');
-        if (byPassUrls.includes(error.config.url) || !accessToken) {
+        if (byPassUrls.includes(error.config.url)) {
             throw error;
         }
         if (error.response && error.response.status >= 401) {

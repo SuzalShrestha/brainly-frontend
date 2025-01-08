@@ -67,7 +67,7 @@ export default {
                         process.env.NODE_ENV === 'production' ? 'none' : 'lax',
                     priority: 'high',
                     //max age of 1 hour
-                    maxAge: 1000 * 60 * 60,
+                    maxAge: 60 * 60,
                 });
                 cookiesStore.set('refreshToken', user.refreshToken, {
                     httpOnly: true,
@@ -76,7 +76,7 @@ export default {
                     sameSite:
                         process.env.NODE_ENV === 'production' ? 'none' : 'lax',
                     //max age of 1 week
-                    maxAge: 1000 * 60 * 60 * 24 * 7,
+                    maxAge: 60 * 60 * 24 * 7,
                 });
                 return true;
             }
