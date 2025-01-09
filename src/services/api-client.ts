@@ -41,9 +41,6 @@ const refreshAccessToken = async () => {
         const response = await apiClient.post('/auth/refresh-token');
         const newAccessToken = response?.data?.data?.accessToken;
         if (!newAccessToken) {
-            signOut({
-                redirectTo: '/logout-success',
-            });
             throw new Error('Refresh Token expired');
         }
         Cookies.set('accessToken', newAccessToken, {
@@ -54,6 +51,7 @@ const refreshAccessToken = async () => {
         });
         return newAccessToken;
     } catch (error) {
+        Cookies.remove('accessToken');
         throw error;
     }
 };
@@ -76,11 +74,16 @@ apiClient.interceptors.response.use(
             throw error;
         }
         if (error.response && error.response.status >= 401) {
-            const newAccessToken: string = await refreshAccessToken();
-            const originalRequest = error.config;
-            originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-            return apiClient(originalRequest);
+            try {
+                const newAccessToken: string = await refreshAccessToken();
+                const originalRequest = error.config;
+                originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+                return apiClient(originalRequest);
+            } catch {
+                signOut();
+                return Promise.reject(error);
+            }
         }
-        throw error;
+        return Promise.reject(error);
     }
 );
