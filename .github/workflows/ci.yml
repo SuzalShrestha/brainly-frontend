@@ -37,35 +37,6 @@ jobs:
 
       - name: Build project
         run: npm run build
-
-      # - name: Cache build output
-      #   uses: actions/cache@v4
-      #   with:
-      #     path: |
-      #       .next/cache
-      #       ${{ github.workspace }}/.next/cache
-      #     key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
-
-      # - name: Upload build artifact
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: build-output
-      #     path: .next
-      #     retention-days: 7
-
+        
       - name: Check bundle size
         run: npm run analyze || true
-
-      # - name: Report Status
-      #   if: always()
-      #   uses: ravsamhq/notify-slack-action@v2
-      #   with:
-      #     status: ${{ job.status }}
-      #     notification_title: "Build Status"
-      #     message_format: "{emoji} *{workflow}* {status_message}"
-      #     footer: "Linked Repo <{repo_url}|{repo}>"
-      #   env:
-      #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-      #   continue-on-error: true
